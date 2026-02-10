@@ -2,11 +2,11 @@ import { NextResponse } from "next/server";
 
 export async function POST(request: Request) {
   try {
-    const { message, pageContent, url, conversationHistory = [] } = await request.json();
+    const { pageContent, url, conversationHistory = [] } = await request.json();
 
-    if (!message) {
+    if (!conversationHistory || conversationHistory.length === 0) {
       return NextResponse.json(
-        { error: "Message is required" },
+        { error: "Conversation history is required" },
         { status: 400 }
       );
     }
@@ -28,34 +28,31 @@ export async function POST(request: Request) {
       // Build messages array from conversation history
       const messages = [];
       
-      // Add conversation history
-      for (const msg of conversationHistory) {
-        messages.push({
-          role: msg.role,
-          content: msg.content,
-        });
-      }
-      
-      // Add current message with context if it's the first message
-      if (conversationHistory.length === 0 && pageContent) {
-        messages.push({
-          role: "user",
-          content: `You are a helpful teaching assistant. A teacher has provided you with content from a webpage and wants you to help create educational materials.
+      // Add context to first user message if pageContent exists
+      for (let i = 0; i < conversationHistory.length; i++) {
+        const msg = conversationHistory[i];
+        
+        // If it's the first user message and we have pageContent, add context
+        if (i === 0 && msg.role === "user" && pageContent) {
+          messages.push({
+            role: "user",
+            content: `You are a helpful teaching assistant. A teacher has provided you with content from a webpage and wants you to help create educational materials.
 
 Website URL: ${url}
 
 Webpage Content:
 ${pageContent}
 
-Teacher's Request: ${message}
+Teacher's Request: ${msg.content}
 
 Please provide a helpful, detailed response that addresses the teacher's request based on the webpage content.`,
-        });
-      } else {
-        messages.push({
-          role: "user",
-          content: message,
-        });
+          });
+        } else {
+          messages.push({
+            role: msg.role,
+            content: msg.content,
+          });
+        }
       }
 
       const response = await fetch("https://api.anthropic.com/v1/messages", {
@@ -103,10 +100,6 @@ Please provide a helpful, detailed response that addresses the teacher's request
           role: msg.role,
           content: msg.content,
         })),
-        {
-          role: "user",
-          content: message,
-        },
       ];
 
       const response = await fetch("https://api.openai.com/v1/chat/completions", {

@@ -27,6 +27,7 @@ export default function TeacherTool() {
   const [fetchingContent, setFetchingContent] = useState(false);
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const [speakingIndex, setSpeakingIndex] = useState<number | null>(null);
+  const [copiedIndex, setCopiedIndex] = useState<number | null>(null);
 
   const scrollToBottom = () => {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
@@ -42,7 +43,12 @@ export default function TeacherTool() {
     
     if (pastedText && pastedText.startsWith("http")) {
       e.preventDefault(); // Prevent default paste
-      setUrl(pastedText);
+      let urlToFetch = pastedText;
+      // Add https:// if no protocol is specified
+      if (!urlToFetch.startsWith('http://') && !urlToFetch.startsWith('https://')) {
+        urlToFetch = 'https://' + urlToFetch;
+      }
+      setUrl(urlToFetch);
       
       // Fetch content immediately with the pasted URL
       setFetchingContent(true);
@@ -50,7 +56,7 @@ export default function TeacherTool() {
         const response = await fetch("/api/fetch-content", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ url: pastedText }),
+          body: JSON.stringify({ url: urlToFetch }),
         });
 
         if (!response.ok) {
@@ -59,11 +65,11 @@ export default function TeacherTool() {
 
         const data = await response.json();
         setPageContent(data.content);
-        setLoadedUrl(pastedText);
+        setLoadedUrl(urlToFetch);
         setMessages([
           {
             role: "assistant",
-            content: `I've loaded the content from ${pastedText}. You can now ask me to summarize it, create a podcast script, generate questions, or anything else you'd like me to do with this content.`,
+            content: `I've loaded the content from ${urlToFetch}. You can now ask me to summarize it, create a podcast script, generate questions, or anything else you'd like me to do with this content.`,
           },
         ]);
       } catch (error) {
@@ -78,12 +84,19 @@ export default function TeacherTool() {
   const fetchWebContent = async () => {
     if (!url.trim()) return;
     
+    // Add https:// if no protocol is specified
+    let urlToFetch = url.trim();
+    if (!urlToFetch.startsWith('http://') && !urlToFetch.startsWith('https://')) {
+      urlToFetch = 'https://' + urlToFetch;
+      setUrl(urlToFetch);
+    }
+    
     setFetchingContent(true);
     try {
       const response = await fetch("/api/fetch-content", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ url }),
+        body: JSON.stringify({ url: urlToFetch }),
       });
 
       if (!response.ok) {
@@ -92,11 +105,11 @@ export default function TeacherTool() {
 
       const data = await response.json();
       setPageContent(data.content);
-      setLoadedUrl(url);
+      setLoadedUrl(urlToFetch);
       setMessages([
         {
           role: "assistant",
-          content: `I've loaded the content from ${url}. You can now ask me to summarize it, create a podcast script, generate questions, or anything else you'd like me to do with this content.`,
+          content: `I've loaded the content from ${urlToFetch}. You can now ask me to summarize it, create a podcast script, generate questions, or anything else you'd like me to do with this content.`,
         },
       ]);
     } catch (error) {
@@ -111,7 +124,8 @@ export default function TeacherTool() {
     if (!messageContent.trim()) return;
 
     const userMessage: Message = { role: "user", content: messageContent };
-    setMessages((prev) => [...prev, userMessage]);
+    const updatedMessages = [...messages, userMessage];
+    setMessages(updatedMessages);
     setInput("");
     setLoading(true);
 
@@ -120,10 +134,9 @@ export default function TeacherTool() {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
-          message: messageContent,
           pageContent,
           url: loadedUrl,
-          conversationHistory: messages,
+          conversationHistory: updatedMessages,
         }),
       });
 
@@ -179,13 +192,23 @@ const handleSpeak = (text: string, index: number) => {
     setSpeakingIndex(null);
   };
 
+  const handleCopy = async (text: string, index: number) => {
+    try {
+      await navigator.clipboard.writeText(text);
+      setCopiedIndex(index);
+      setTimeout(() => setCopiedIndex(null), 2000);
+    } catch (err) {
+      console.error('Failed to copy text:', err);
+    }
+  };
+
   
   return (
     <div className="min-h-screen bg-white dark:bg-gray-950 flex flex-col">
       {/* Header */}
       <div className="bg-white dark:bg-gray-950 border-b border-gray-200 dark:border-gray-800 px-8 py-4">
         <div className="max-w-7xl mx-auto">
-          <h1 className="text-2xl font-bold text-gray-900 dark:text-white">🎓 Teacher's Content Assistant</h1>
+          <h1 className="text-2xl font-bold rainbow-text">🎓 Teacher's Content Assistant</h1>
           <p className="text-sm text-gray-600 dark:text-gray-400 mt-1">Transform web content into educational materials</p>
         </div>
       </div>
@@ -273,23 +296,42 @@ const handleSpeak = (text: string, index: number) => {
                   <div className="flex items-start gap-3">
                     <div className="flex-1 whitespace-pre-wrap">{message.content}</div>
                     {message.role === "assistant" && (
-                      <Button
-                        onClick={() => handleSpeak(message.content, index)}
-                        variant="ghost"
-                        size="icon"
-                        className="rounded-lg"
-                        title={speakingIndex === index ? "Stop reading" : "Read aloud"}
-                      >
-                        {speakingIndex === index ? (
-                          <svg className="w-5 h-5 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 9v6m4-6v6m7-3a9 9 0 11-18 0 9 9 0 0118 0z" />
-                          </svg>
-                        ) : (
-                          <svg className="w-5 h-5 text-gray-500 dark:text-gray-400" fill="currentColor" viewBox="0 0 20 20">
-                            <path fillRule="evenodd" d="M9.383 3.076A1 1 0 0110 4v12a1 1 0 01-1.707.707L4.586 13H2a1 1 0 01-1-1V8a1 1 0 011-1h2.586l3.707-3.707a1 1 0 011.09-.217zM14.657 2.929a1 1 0 011.414 0A9.972 9.972 0 0119 10a9.972 9.972 0 01-2.929 7.071 1 1 0 01-1.414-1.414A7.971 7.971 0 0017 10c0-2.21-.894-4.208-2.343-5.657a1 1 0 010-1.414zm-2.829 2.828a1 1 0 011.415 0A5.983 5.983 0 0115 10a5.984 5.984 0 01-1.757 4.243 1 1 0 01-1.415-1.415A3.984 3.984 0 0013 10a3.983 3.983 0 00-1.172-2.828 1 1 0 010-1.415z" clipRule="evenodd" />
-                          </svg>
-                        )}
-                      </Button>
+                      <div className="flex gap-1">
+                        <Button
+                          onClick={() => handleCopy(message.content, index)}
+                          variant="ghost"
+                          size="icon"
+                          className="rounded-lg"
+                          title={copiedIndex === index ? "Copied!" : "Copy to clipboard"}
+                        >
+                          {copiedIndex === index ? (
+                            <svg className="w-5 h-5 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+                            </svg>
+                          ) : (
+                            <svg className="w-5 h-5 text-gray-500 dark:text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z" />
+                            </svg>
+                          )}
+                        </Button>
+                        <Button
+                          onClick={() => handleSpeak(message.content, index)}
+                          variant="ghost"
+                          size="icon"
+                          className="rounded-lg"
+                          title={speakingIndex === index ? "Stop reading" : "Read aloud"}
+                        >
+                          {speakingIndex === index ? (
+                            <svg className="w-5 h-5 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 9v6m4-6v6m7-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+                            </svg>
+                          ) : (
+                            <svg className="w-5 h-5 text-gray-500 dark:text-gray-400" fill="currentColor" viewBox="0 0 20 20">
+                              <path fillRule="evenodd" d="M9.383 3.076A1 1 0 0110 4v12a1 1 0 01-1.707.707L4.586 13H2a1 1 0 01-1-1V8a1 1 0 011-1h2.586l3.707-3.707a1 1 0 011.09-.217zM14.657 2.929a1 1 0 011.414 0A9.972 9.972 0 0119 10a9.972 9.972 0 01-2.929 7.071 1 1 0 01-1.414-1.414A7.971 7.971 0 0017 10c0-2.21-.894-4.208-2.343-5.657a1 1 0 010-1.414zm-2.829 2.828a1 1 0 011.415 0A5.983 5.983 0 0115 10a5.984 5.984 0 01-1.757 4.243 1 1 0 01-1.415-1.415A3.984 3.984 0 0013 10a3.983 3.983 0 00-1.172-2.828 1 1 0 010-1.415z" clipRule="evenodd" />
+                            </svg>
+                          )}
+                        </Button>
+                      </div>
                     )}
                   </div>
                 </div>

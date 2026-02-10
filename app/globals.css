@@ -25,23 +25,128 @@ body {
   font-family: Arial, Helvetica, sans-serif;
 }
 
-@keyframes bounce {
-  0%, 100% {
-    transform: translateY(0);
+@layer utilities {
+  @keyframes bounce {
+    0%, 100% {
+      transform: translateY(0);
+    }
+    50% {
+      transform: translateY(-4px);
+    }
   }
-  50% {
-    transform: translateY(-4px);
+
+  @keyframes rainbow {
+    0% {
+      background-position: 0% 50%;
+    }
+    50% {
+      background-position: 100% 50%;
+    }
+    100% {
+      background-position: 0% 50%;
+    }
   }
-}
 
-.animate-bounce {
-  animation: bounce 1s ease-in-out infinite;
-}
+  @keyframes sparkle {
+    0% {
+      opacity: 1;
+      transform: translateY(0) scale(1);
+    }
+    100% {
+      opacity: 0;
+      transform: translateY(30px) scale(0);
+    }
+  }
 
-.delay-100 {
-  animation-delay: 0.1s;
-}
+  .animate-sparkle {
+    animation: sparkle 1s ease-out forwards;
+  }
 
-.delay-200 {
-  animation-delay: 0.2s;
+  .rainbow-text {
+    background: linear-gradient(
+      90deg,
+      #ff6b6b,
+      #ffa94d,
+      #ffd43b,
+      #51cf66,
+      #339af0,
+      #845ef7,
+      #f06595,
+      #ff6b6b
+    );
+    background-size: 200% 100%;
+    -webkit-background-clip: text;
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
+    animation: rainbow 3s linear infinite;
+  }
+
+  button:not(:disabled):hover {
+    background: linear-gradient(
+      90deg,
+      #ff6b6b,
+      #ffa94d,
+      #ffd43b,
+      #51cf66,
+      #339af0,
+      #845ef7,
+      #f06595,
+      #ff6b6b
+    ) !important;
+    background-size: 200% 100% !important;
+    animation: rainbow 3s linear infinite;
+    color: white !important;
+    border-color: transparent !important;
+  }
+
+  @media (prefers-color-scheme: dark) {
+    .rainbow-text {
+      background: linear-gradient(
+        90deg,
+        #ffb3ba,
+        #ffdfba,
+        #ffffba,
+        #baffc9,
+        #bae1ff,
+        #d4baff,
+        #ffb3f7,
+        #ffb3ba
+      );
+      background-size: 200% 100%;
+      -webkit-background-clip: text;
+      background-clip: text;
+      -webkit-text-fill-color: transparent;
+      animation: rainbow 3s linear infinite;
+    }
+
+    button:not(:disabled):hover {
+      background: linear-gradient(
+        90deg,
+        #ffb3ba,
+        #ffdfba,
+        #ffffba,
+        #baffc9,
+        #bae1ff,
+        #d4baff,
+        #ffb3f7,
+        #ffb3ba
+      ) !important;
+      background-size: 200% 100% !important;
+      animation: rainbow 3s linear infinite;
+      color: #1a1a1a !important;
+      border-color: transparent !important;
+    }
+  }
+
+  .animate-bounce {
+    animation: bounce 1s ease-in-out infinite;
+  }
+
+  .delay-100 {
+    animation-delay: 0.1s;
+  }
+
+  .delay-200 {
+    animation-delay: 0.2s;
+  }
 }
