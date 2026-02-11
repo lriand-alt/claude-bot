@@ -18,7 +18,7 @@ export async function POST(request: Request) {
     if (!response.ok) {
       return NextResponse.json(
         { error: "Failed to fetch webpage" },
-        { status: response.status }
+        { status: response.status },
       );
     }
 
@@ -42,7 +42,7 @@ export async function POST(request: Request) {
     console.error("Error fetching content:", error);
     return NextResponse.json(
       { error: "Failed to fetch webpage content" },
-      { status: 500 }
+      { status: 500 },
     );
   }
 }

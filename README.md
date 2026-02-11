@@ -17,6 +17,7 @@ A Next.js tool for teachers to transform web content into educational materials 
 ## Setup
 
 1. Install dependencies:
+
    ```bash
    npm install
    ```
@@ -24,15 +25,17 @@ A Next.js tool for teachers to transform web content into educational materials 
 2. Configure your API key:
    - Copy `.env.example` to `.env.local`
    - Add your Anthropic API key (recommended) or OpenAI API key
+
    ```bash
    cp .env.example .env.local
    ```
-   
+
    Get your API key from:
    - Anthropic: https://console.anthropic.com/
    - OpenAI: https://platform.openai.com/api-keys
 
 3. Run the development server:
+
    ```bash
    npm run dev
    ```
@@ -49,6 +52,7 @@ A Next.js tool for teachers to transform web content into educational materials 
 ## Examples
 
 Try these actions with a loaded webpage:
+
 - "Summarize the main points"
 - "Create 5 discussion questions for high school students"
 - "Generate a worksheet based on this content"
@@ -62,4 +66,3 @@ Try these actions with a loaded webpage:
 - TypeScript
 - Tailwind CSS
 - Anthropic Claude / OpenAI GPT
-

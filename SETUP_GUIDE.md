@@ -9,6 +9,7 @@ Your teacher tool is ready! Here's what you need to do:
 To enable AI functionality, you need an API key from either Anthropic or OpenAI.
 
 **Option A: Use Anthropic Claude (Recommended)**
+
 1. Go to https://console.anthropic.com/
 2. Sign up or log in
 3. Navigate to API Keys
@@ -23,6 +24,7 @@ To enable AI functionality, you need an API key from either Anthropic or OpenAI.
    ```
 
 **Option B: Use OpenAI GPT**
+
 1. Go to https://platform.openai.com/api-keys
 2. Sign up or log in
 3. Create a new API key
@@ -38,6 +40,7 @@ To enable AI functionality, you need an API key from either Anthropic or OpenAI.
 ### 2. Restart the Development Server
 
 After adding your API key:
+
 1. Stop the current dev server (Ctrl+C in the terminal)
 2. Start it again:
    ```bash
@@ -54,6 +57,7 @@ After adding your API key:
 ## Features
 
 ### Quick Action Buttons
+
 - **📝 Summarize**: Get a concise summary of the webpage
 - **🎙️ Create Podcast**: Generate a podcast script from the content
 - **❓ Generate Questions**: Create comprehension questions for students
@@ -61,7 +65,9 @@ After adding your API key:
 - **🧪 Quiz**: Generate a multiple choice quiz with explanations
 
 ### Custom Requests
+
 You can also type your own requests, such as:
+
 - "Create 5 discussion questions for high school students"
 - "Explain the key concepts in simple terms suitable for 5th graders"
 - "Generate a lesson plan outline based on this content"
@@ -78,16 +84,19 @@ You can also type your own requests, such as:
 ## Troubleshooting
 
 ### "API key not configured" message
+
 - Make sure you've created a `.env.local` file
 - Check that your API key is correctly pasted
 - Restart the dev server after adding the key
 
 ### Content not loading from a URL
+
 - Verify the URL is accessible (try opening it in a browser)
 - Some websites may block automated access
 - Check your internet connection
 
 ### AI responses seem off
+
 - Try rephrasing your request more specifically
 - Include grade level or target audience in your request
 - Break complex requests into smaller, simpler ones
@@ -95,6 +104,7 @@ You can also type your own requests, such as:
 ## Need Help?
 
 Check out:
+
 - [Next.js Documentation](https://nextjs.org/docs)
 - [Anthropic API Docs](https://docs.anthropic.com/)
 - [OpenAI API Docs](https://platform.openai.com/docs)

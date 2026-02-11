@@ -17,7 +17,15 @@ export default function CursorGlitter() {
       if (now - lastTime < 50) return;
       lastTime = now;
 
-      const colors = ["#ff6b6b", "#ffa94d", "#ffd43b", "#51cf66", "#339af0", "#845ef7", "#f06595"];
+      const colors = [
+        "#ff6b6b",
+        "#ffa94d",
+        "#ffd43b",
+        "#51cf66",
+        "#339af0",
+        "#845ef7",
+        "#f06595",
+      ];
       const newSparkle = {
         id: idCounter++,
         x: e.clientX,

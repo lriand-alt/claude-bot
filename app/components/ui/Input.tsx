@@ -7,8 +7,10 @@ const inputVariants = cva(
   {
     variants: {
       variant: {
-        default: "border-gray-300 dark:border-gray-700 focus:ring-green-500 focus:border-transparent bg-white dark:bg-gray-900 text-gray-900 dark:text-white placeholder-gray-400 dark:placeholder-gray-500",
-        ghost: "border-transparent bg-transparent focus:ring-green-500 text-gray-900 dark:text-white placeholder-gray-400 dark:placeholder-gray-500",
+        default:
+          "border-gray-300 dark:border-gray-700 focus:ring-green-500 focus:border-transparent bg-white dark:bg-gray-900 text-gray-900 dark:text-white placeholder-gray-400 dark:placeholder-gray-500",
+        ghost:
+          "border-transparent bg-transparent focus:ring-green-500 text-gray-900 dark:text-white placeholder-gray-400 dark:placeholder-gray-500",
       },
       inputSize: {
         sm: "px-3 py-2 text-sm",
@@ -20,11 +22,12 @@ const inputVariants = cva(
       variant: "default",
       inputSize: "md",
     },
-  }
+  },
 );
 
 export interface InputProps
-  extends Omit<InputHTMLAttributes<HTMLInputElement>, "size">,
+  extends
+    Omit<InputHTMLAttributes<HTMLInputElement>, "size">,
     VariantProps<typeof inputVariants> {}
 
 const Input = forwardRef<HTMLInputElement, InputProps>(
@@ -36,7 +39,7 @@ const Input = forwardRef<HTMLInputElement, InputProps>(
         {...props}
       />
     );
-  }
+  },
 );
 
 Input.displayName = "Input";
