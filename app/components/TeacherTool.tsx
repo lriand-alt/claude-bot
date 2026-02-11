@@ -3,6 +3,15 @@
 import { useState, useRef, useEffect } from "react";
 import { Button } from "./ui/Button";
 import { Input } from "./ui/Input";
+import * as pdfjsLib from "pdfjs-dist";
+
+// Configure PDF.js worker using the npm package
+if (typeof window !== "undefined") {
+  pdfjsLib.GlobalWorkerOptions.workerSrc = new URL(
+    "pdfjs-dist/build/pdf.worker.min.mjs",
+    import.meta.url,
+  ).toString();
+}
 
 type Message = {
   role: "user" | "assistant";
@@ -271,32 +280,50 @@ export default function TeacherTool() {
 
     setFetchingContent(true);
     try {
-      const formData = new FormData();
-      formData.append("file", file);
+      // Read file as ArrayBuffer
+      const arrayBuffer = await file.arrayBuffer();
+      const uint8Array = new Uint8Array(arrayBuffer);
 
-      const response = await fetch("/api/upload-pdf", {
-        method: "POST",
-        body: formData,
+      // Load PDF document
+      const loadingTask = pdfjsLib.getDocument({
+        data: uint8Array,
       });
+      const pdfDocument = await loadingTask.promise;
 
-      if (!response.ok) {
-        throw new Error("Failed to process PDF");
+      let fullText = "";
+
+      // Extract text from each page
+      for (let pageNum = 1; pageNum <= pdfDocument.numPages; pageNum++) {
+        const page = await pdfDocument.getPage(pageNum);
+        const textContent = await page.getTextContent();
+        const pageText = textContent.items
+          .map((item: any) => item.str)
+          .join(" ");
+        fullText += pageText + "\n\n";
       }
 
-      const data = await response.json();
-      setPageContent(data.content);
-      setLoadedPdfName(data.filename);
+      const extractedText = fullText.trim();
+      const finalContent =
+        extractedText ||
+        `[PDF uploaded: ${file.name} with ${pdfDocument.numPages} pages. This PDF may contain images or non-extractable text. Please describe what you'd like help with from this document.]`;
+
+      setPageContent(finalContent);
+      setLoadedPdfName(file.name);
       setLoadedUrl("");
       setPdfPickerOpened(true);
       setMessages([
         {
           role: "assistant",
-          content: `I've loaded the PDF "${data.filename}" (${data.pages} pages). You can now ask me to summarize it, create a podcast script, generate questions, or anything else you'd like me to do with this content.`,
+          content: `I've loaded the PDF "${file.name}" (${pdfDocument.numPages} pages). You can now ask me to summarize it, create a podcast script, generate questions, or anything else you'd like me to do with this content.`,
         },
       ]);
     } catch (error) {
       console.error("Error processing PDF:", error);
-      alert("Failed to process the PDF file. Please try again.");
+      const errorMessage =
+        error instanceof Error ? error.message : "Failed to process PDF";
+      alert(errorMessage);
+      setContentMode(null);
+      setPdfPickerOpened(false);
     } finally {
       setFetchingContent(false);
       if (fileInputRef.current) {
