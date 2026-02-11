@@ -239,6 +239,27 @@ export default function TeacherTool() {
     }
   };
 
+  // Load PDF.js from CDN
+  const loadPdfJs = async () => {
+    if ((window as any).pdfjsLib) {
+      return (window as any).pdfjsLib;
+    }
+
+    return new Promise((resolve, reject) => {
+      const script = document.createElement("script");
+      script.src =
+        "https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js";
+      script.onload = () => {
+        const pdfjsLib = (window as any).pdfjsLib;
+        pdfjsLib.GlobalWorkerOptions.workerSrc =
+          "https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js";
+        resolve(pdfjsLib);
+      };
+      script.onerror = reject;
+      document.head.appendChild(script);
+    });
+  };
+
   const startFresh = () => {
     setContentMode(null);
     setUrl("");
@@ -271,23 +292,15 @@ export default function TeacherTool() {
 
     setFetchingContent(true);
     try {
-      // Dynamically import pdfjs-dist only on client side
-      const pdfjsLib = await import("pdfjs-dist");
-
-      // Configure worker
-      pdfjsLib.GlobalWorkerOptions.workerSrc = new URL(
-        "pdfjs-dist/build/pdf.worker.min.mjs",
-        import.meta.url,
-      ).toString();
+      // Load PDF.js from CDN dynamically
+      const pdfjsLib = await loadPdfJs();
 
       // Read file as ArrayBuffer
       const arrayBuffer = await file.arrayBuffer();
       const uint8Array = new Uint8Array(arrayBuffer);
 
       // Load PDF document
-      const loadingTask = pdfjsLib.getDocument({
-        data: uint8Array,
-      });
+      const loadingTask = pdfjsLib.getDocument({ data: uint8Array });
       const pdfDocument = await loadingTask.promise;
 
       let fullText = "";
