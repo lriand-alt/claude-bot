@@ -3,15 +3,6 @@
 import { useState, useRef, useEffect } from "react";
 import { Button } from "./ui/Button";
 import { Input } from "./ui/Input";
-import * as pdfjsLib from "pdfjs-dist";
-
-// Configure PDF.js worker using the npm package
-if (typeof window !== "undefined") {
-  pdfjsLib.GlobalWorkerOptions.workerSrc = new URL(
-    "pdfjs-dist/build/pdf.worker.min.mjs",
-    import.meta.url,
-  ).toString();
-}
 
 type Message = {
   role: "user" | "assistant";
@@ -280,6 +271,15 @@ export default function TeacherTool() {
 
     setFetchingContent(true);
     try {
+      // Dynamically import pdfjs-dist only on client side
+      const pdfjsLib = await import("pdfjs-dist");
+
+      // Configure worker
+      pdfjsLib.GlobalWorkerOptions.workerSrc = new URL(
+        "pdfjs-dist/build/pdf.worker.min.mjs",
+        import.meta.url,
+      ).toString();
+
       // Read file as ArrayBuffer
       const arrayBuffer = await file.arrayBuffer();
       const uint8Array = new Uint8Array(arrayBuffer);
