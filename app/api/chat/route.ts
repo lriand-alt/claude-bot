@@ -33,26 +33,23 @@ export async function POST(request: Request) {
         const msg = conversationHistory[i];
 
         // If it's the first user message and we have pageContent, add context
-        if (i === 0 && msg.role === "user" && pageContent) {
+        if (i === 0 && msg.role === "assistant" && pageContent) {
           const sourceInfo = url ? `Website URL: ${url}` : "";
 
           messages.push({
-            role: "user",
+            role: "assistant",
             content: `You are a helpful teaching assistant. A teacher has provided you with content and wants you to help create educational materials.
 
 ${sourceInfo ? sourceInfo + "\n\n" : ""}Content:
 ${pageContent}
 
-Teacher's Request: ${msg.content}
-
 Please provide a helpful, detailed response that addresses the teacher's request based on the content provided.`,
           });
-        } else {
-          messages.push({
-            role: msg.role,
-            content: msg.content,
-          });
         }
+        messages.push({
+          role: msg.role,
+          content: msg.content,
+        });
       }
 
       const response = await fetch("https://api.anthropic.com/v1/messages", {
