@@ -143,6 +143,7 @@ export default function TeacherTool() {
   const handlePdfUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (!file) {
+      // User canceled the file picker - reset state
       setContentMode(null);
       setPdfPickerOpened(false);
       return;
@@ -185,17 +186,6 @@ export default function TeacherTool() {
   };
 
   const handlePdfClick = () => {
-    const onFocus = () => {
-      setTimeout(() => {
-        if (fileInputRef.current && !fileInputRef.current.files?.length) {
-          setContentMode(null);
-          setPdfPickerOpened(false);
-        }
-      }, 300);
-      window.removeEventListener("focus", onFocus);
-    };
-
-    window.addEventListener("focus", onFocus);
     fileInputRef.current?.click();
   };
 
