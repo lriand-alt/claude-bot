@@ -6,7 +6,7 @@ Your teacher tool is ready! Here's what you need to do:
 
 ### 1. Set up your API Key
 
-To enable AI functionality, you need an API key from either Anthropic or OpenAI.
+To enable AI functionality, you need an API key from one of the supported providers.
 
 **Option A: Use Anthropic Claude (Recommended)**
 
@@ -37,6 +37,21 @@ To enable AI functionality, you need an API key from either Anthropic or OpenAI.
    OPENAI_API_KEY=your_key_here
    ```
 
+**Option C: Use LRU RAG Chatbot**
+
+1. Obtain your RAG API endpoint URL and credentials
+2. Copy the `.env.example` file to `.env.local`:
+   ```bash
+   cp .env.example .env.local
+   ```
+3. Add your RAG configuration to `.env.local`:
+   ```
+   LRU_RAG_API_URL=https://admin.dev.lrurag.dk/api/v1/chat
+   LRU_RAG_APPLICATION_ID=your_application_id_here
+   # OR use LRU_RAG_ASSISTANT_ID instead
+   ```
+4. See [README-LRU-RAG.md](README-LRU-RAG.md) for more details
+
 ### 2. Restart the Development Server
 
 After adding your API key:
@@ -50,9 +65,10 @@ After adding your API key:
 ### 3. Start Using the Tool
 
 1. Open http://localhost:3000 in your browser
-2. Enter a URL of any webpage you want to work with
-3. Click "Load Content"
-4. Use the quick action buttons or type your own requests!
+2. **Select your AI provider** using the toggle at the top right (Claude, OpenAI, or RAG)
+3. Enter a URL of any webpage you want to work with
+4. Click "Load Content"
+5. Use the quick action buttons or type your own requests!
 
 ## Features
 

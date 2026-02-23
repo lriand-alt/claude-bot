@@ -3,20 +3,29 @@ type Message = {
   content: string;
 };
 
+export type AIProvider = "claude" | "openai" | "rag";
+
+export interface ChatResponse {
+  response: string;
+  suggestions?: string[];
+}
+
 /**
  * Send a message to the chat API
  * @param messageContent - The message to send
  * @param pageContent - The loaded page/PDF content
  * @param loadedUrl - The loaded URL (if any)
  * @param conversationHistory - Previous messages
- * @returns The assistant's response
+ * @param provider - The AI provider to use (default: "claude")
+ * @returns The assistant's response and optional suggestions (for RAG)
  */
 export const sendChatMessage = async (
   messageContent: string,
   pageContent: string,
   loadedUrl: string,
   conversationHistory: Message[],
-): Promise<string> => {
+  provider: AIProvider = "claude",
+): Promise<ChatResponse> => {
   const response = await fetch("/api/chat", {
     method: "POST",
     headers: { "Content-Type": "application/json" },
@@ -24,6 +33,7 @@ export const sendChatMessage = async (
       pageContent,
       url: loadedUrl,
       conversationHistory,
+      provider,
     }),
   });
 
@@ -33,5 +43,8 @@ export const sendChatMessage = async (
     throw new Error(data.error || "Failed to get response");
   }
 
-  return data.response;
+  return {
+    response: data.response,
+    suggestions: data.suggestions,
+  };
 };

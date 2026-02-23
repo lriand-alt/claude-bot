@@ -58,10 +58,6 @@ export function Suggestions({
   ];
 
   return (
-    <div className="mb-6">
-      <p className="text-sm font-medium text-gray-700 dark:text-gray-300 mb-3">
-        {t.title}
-      </p>
       <div className="flex flex-wrap gap-2">
         {suggestions.map((suggestion, index) => (
           <Button
@@ -76,6 +72,5 @@ export function Suggestions({
           </Button>
         ))}
       </div>
-    </div>
   );
 }

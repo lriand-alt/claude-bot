@@ -1,19 +1,21 @@
 "use client";
 
-import { useState, useRef } from "react";
+import { useState, useRef, useEffect } from "react";
 import { useLanguage } from "../contexts/LanguageContext";
 import { extractPdfText } from "../lib/pdfUtils";
 import { fetchUrlContent, normalizeUrl } from "../lib/contentFetcher";
-import { sendChatMessage } from "../lib/chatApi";
+import { sendChatMessage, AIProvider } from "../lib/chatApi";
 import { Header } from "./teacher/Header";
 import { ContentSourceSection } from "./teacher/ContentSourceSection";
 import { Suggestions } from "./teacher/Suggestions";
 import { ChatMessages } from "./teacher/ChatMessages";
 import { InputArea } from "./teacher/InputArea";
+import { ProviderSelector } from "./teacher/ProviderSelector";
 
 type Message = {
   role: "user" | "assistant";
   content: string;
+  questions?: string[];
 };
 
 export default function TeacherTool() {
@@ -29,6 +31,30 @@ export default function TeacherTool() {
   const [loadedPdfName, setLoadedPdfName] = useState("");
   const [contentMode, setContentMode] = useState<"url" | "pdf" | null>(null);
   const [pdfPickerOpened, setPdfPickerOpened] = useState(false);
+  const [aiProvider, setAiProvider] = useState<AIProvider>("rag");
+  const [questionSuggestions, setQuestionSuggestions] = useState<string[]>();
+
+  const handleProviderChange = (provider: AIProvider) => {
+    setAiProvider(provider);
+    // Reset to initial state when changing provider
+    if (provider === "rag") {
+      setContentMode(null);
+    } else {
+      // For Claude and OpenAI, automatically set to PDF mode
+      setContentMode("pdf");
+    }
+    setUrl("");
+    setLoadedUrl("");
+    setPageContent("");
+    setMessages([]);
+    setInput("");
+    setLoadedPdfName("");
+    setPdfPickerOpened(false);
+    setQuestionSuggestions(undefined);
+    if (fileInputRef.current) {
+      fileInputRef.current.value = "";
+    }
+  };
 
   const handlePaste = async (e: React.ClipboardEvent<HTMLInputElement>) => {
     const pastedText = e.clipboardData.getData("text").trim();
@@ -95,17 +121,24 @@ export default function TeacherTool() {
     setLoading(true);
 
     try {
-      const response = await sendChatMessage(
+      const { response, suggestions } = await sendChatMessage(
         messageContent,
         pageContent,
         loadedUrl,
         updatedMessages,
+        aiProvider,
       );
       const assistantMessage: Message = {
         role: "assistant",
         content: response,
+        questions: suggestions,
       };
       setMessages((prev) => [...prev, assistantMessage]);
+      
+      // Update question suggestions if provided (from RAG)
+      if (suggestions && suggestions.length > 0) {
+        setQuestionSuggestions(suggestions);
+      }
     } catch (error) {
       console.error("Error sending message:", error);
       const errorMessage =
@@ -207,57 +240,89 @@ export default function TeacherTool() {
       />
 
       <div className="flex-1 flex flex-col max-w-7xl w-full mx-auto px-8 py-6">
-        <ContentSourceSection
-          contentMode={contentMode}
-          url={url}
-          loadedUrl={loadedUrl}
-          loadedPdfName={loadedPdfName}
-          fetchingContent={fetchingContent}
-          pdfPickerOpened={pdfPickerOpened}
-          fileInputRef={fileInputRef}
-          translations={t}
-          onContentModeChange={handleContentModeChange}
-          onUrlChange={setUrl}
-          onFetchWebContent={fetchWebContent}
-          onPaste={handlePaste}
-          onPdfUpload={handlePdfUpload}
-          onPdfClick={handlePdfClick}
-          onStartFresh={startFresh}
-        />
+        <div className="flex justify-between items-center mb-4">
+          {(pageContent || aiProvider === "rag") && (
+            <Suggestions
+              loading={loading}
+              translations={{
+                title: t.quickActions.title,
+                labels: {
+                  summarize: t.quickActions.summarize,
+                  createPodcast: t.quickActions.createPodcast,
+                  generateQuestions: t.quickActions.generateQuestions,
+                  studyGuide: t.quickActions.studyGuide,
+                  quiz: t.quickActions.quiz,
+                },
+                prompts: {
+                  summarize: t.suggestions.summarize,
+                  createPodcast: t.suggestions.createPodcast,
+                  generateQuestions: t.suggestions.generateQuestions,
+                  studyGuide: t.suggestions.studyGuide,
+                  quiz: t.suggestions.quiz,
+                },
+              }}
+              onSuggestionClick={handleSuggestionClick}
+            />
+          )}
+          <div className="flex-1" />
+          <div className="flex items-center gap-3">
+            {aiProvider !== "rag" && contentMode === null && (
+              <ContentSourceSection
+                contentMode={contentMode}
+                url={url}
+                loadedUrl={loadedUrl}
+                loadedPdfName={loadedPdfName}
+                fetchingContent={fetchingContent}
+                pdfPickerOpened={pdfPickerOpened}
+                fileInputRef={fileInputRef}
+                translations={t}
+                onContentModeChange={handleContentModeChange}
+                onUrlChange={setUrl}
+                onFetchWebContent={fetchWebContent}
+                onPaste={handlePaste}
+                onPdfUpload={handlePdfUpload}
+                onPdfClick={handlePdfClick}
+                onStartFresh={startFresh}
+              />
+            )}
+            <ProviderSelector
+              provider={aiProvider}
+              onProviderChange={handleProviderChange}
+              claudeLabel={t.providers?.claude || "Claude"}
+              openaiLabel={t.providers?.openai || "OpenAI"}
+              ragLabel={t.providers?.rag || "RAG"}
+            />
+          </div>
+        </div>
 
-        {pageContent && (
-          <Suggestions
-            loading={loading}
-            translations={{
-              title: t.quickActions.title,
-              labels: {
-                summarize: t.quickActions.summarize,
-                createPodcast: t.quickActions.createPodcast,
-                generateQuestions: t.quickActions.generateQuestions,
-                studyGuide: t.quickActions.studyGuide,
-                quiz: t.quickActions.quiz,
-              },
-              prompts: {
-                summarize: t.suggestions.summarize,
-                createPodcast: t.suggestions.createPodcast,
-                generateQuestions: t.suggestions.generateQuestions,
-                studyGuide: t.suggestions.studyGuide,
-                quiz: t.suggestions.quiz,
-              },
-            }}
-            onSuggestionClick={handleSuggestionClick}
+        {aiProvider !== "rag" && contentMode !== null && (
+          <ContentSourceSection
+            contentMode={contentMode}
+            url={url}
+            loadedUrl={loadedUrl}
+            loadedPdfName={loadedPdfName}
+            fetchingContent={fetchingContent}
+            pdfPickerOpened={pdfPickerOpened}
+            fileInputRef={fileInputRef}
+            translations={t}
+            onContentModeChange={handleContentModeChange}
+            onUrlChange={setUrl}
+            onFetchWebContent={fetchWebContent}
+            onPaste={handlePaste}
+            onPdfUpload={handlePdfUpload}
+            onPdfClick={handlePdfClick}
+            onStartFresh={startFresh}
           />
         )}
 
         <ChatMessages
           messages={messages}
           loading={loading}
-          emptyStateTitle={t.chat.emptyStateTitle}
-          emptyStateSubtitle={t.chat.emptyStateSubtitle}
           copyTooltip={t.chat.copyTooltip}
           copiedTooltip={t.chat.copiedTooltip}
           readAloudTooltip={t.chat.readAloudTooltip}
           stopReadingTooltip={t.chat.stopReadingTooltip}
+          onSuggestionClick={sendMessage}
         />
 
         <InputArea

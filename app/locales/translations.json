@@ -47,6 +47,11 @@
       "readAloudTooltip": "Læs højt",
       "stopReadingTooltip": "Stop læsning"
     },
+    "providers": {
+      "claude": "Claude",
+      "openai": "OpenAI",
+      "rag": "RAG"
+    },
     "errors": {
       "pdfUploadFailed": "Kunne ikke uploade PDF-filen",
       "urlFetchFailed": "Kunne ikke hente websidens indhold. Sørg for, at URL'en er gyldig.",
@@ -102,6 +107,11 @@
       "copiedTooltip": "Copied!",
       "readAloudTooltip": "Read aloud",
       "stopReadingTooltip": "Stop reading"
+    },
+    "providers": {
+      "claude": "Claude",
+      "openai": "OpenAI",
+      "rag": "RAG"
     },
     "errors": {
       "pdfUploadFailed": "Failed to upload PDF file",

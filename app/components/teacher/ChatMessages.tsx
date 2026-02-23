@@ -3,32 +3,32 @@
 import { useState, useRef, useEffect } from "react";
 import { Button } from "../ui/Button";
 import { speakText, stopSpeaking, copyToClipboard } from "../../lib/speechUtils";
+import { parseMarkdown } from "../../lib/markdownUtils";
 
 type Message = {
   role: "user" | "assistant";
   content: string;
+  questions?: string[];
 };
 
 interface ChatMessagesProps {
   messages: Message[];
   loading: boolean;
-  emptyStateTitle: string;
-  emptyStateSubtitle: string;
   copyTooltip: string;
   copiedTooltip: string;
   readAloudTooltip: string;
   stopReadingTooltip: string;
+  onSuggestionClick?: (suggestion: string) => void;
 }
 
 export function ChatMessages({
   messages,
   loading,
-  emptyStateTitle,
-  emptyStateSubtitle,
   copyTooltip,
   copiedTooltip,
   readAloudTooltip,
   stopReadingTooltip,
+  onSuggestionClick,
 }: ChatMessagesProps) {
   const [speakingIndex, setSpeakingIndex] = useState<number | null>(null);
   const [copiedIndex, setCopiedIndex] = useState<number | null>(null);
@@ -65,10 +65,6 @@ export function ChatMessages({
     <div className="flex-1 overflow-y-auto space-y-4 mb-6 min-h-0">
       {messages.length === 0 ? (
         <div className="flex items-center justify-center h-full text-center text-gray-400 dark:text-gray-600">
-          <div>
-            <p className="text-xl mb-2">{emptyStateTitle}</p>
-            <p className="text-sm">{emptyStateSubtitle}</p>
-          </div>
         </div>
       ) : (
         messages.map((message, index) => (
@@ -84,9 +80,14 @@ export function ChatMessages({
               }`}
             >
               <div className="flex items-start gap-3">
-                <div className="flex-1 whitespace-pre-wrap">
-                  {message.content}
-                </div>
+                <div 
+                  className="flex-1 prose prose-sm dark:prose-invert max-w-none"
+                  dangerouslySetInnerHTML={{ 
+                    __html: message.role === "assistant" 
+                      ? parseMarkdown(message.content) 
+                      : message.content.replace(/\n/g, '<br/>') 
+                  }}
+                />
                 {message.role === "assistant" && (
                   <div className="flex gap-1">
                     <Button
@@ -168,6 +169,24 @@ export function ChatMessages({
                   </div>
                 )}
               </div>
+              
+              {/* Question suggestions from RAG */}
+              {message.role === "assistant" && message.questions && message.questions.length > 0 && (
+                <div className="mt-4 pt-4 border-t border-gray-200 dark:border-gray-700">
+                  <p className="text-sm font-medium text-gray-600 dark:text-gray-400 mb-2">Suggested follow-up questions:</p>
+                  <div className="space-y-2">
+                    {message.questions.map((question, qIndex) => (
+                      <button
+                        key={qIndex}
+                        onClick={() => onSuggestionClick?.(question)}
+                        className="block w-full text-left text-sm px-3 py-2 rounded-lg bg-gray-50 dark:bg-gray-800 hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors text-gray-700 dark:text-gray-300"
+                      >
+                        {question}
+                      </button>
+                    ))}
+                  </div>
+                </div>
+              )}
             </div>
           </div>
         ))
