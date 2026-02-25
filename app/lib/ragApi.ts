@@ -12,7 +12,7 @@ export interface RagApiResponse {
  * @param rawStream - Raw streamed response from RAG API
  * @returns Object with formatted content and question suggestions
  */
-function formatRagResponse(rawStream: string): RagApiResponse {
+export const formatRagResponse =(rawStream: string): RagApiResponse => {
   const lines = rawStream.split("\n").filter((line) => line.trim());
   let formattedText = "";
   const suggestions: string[] = [];

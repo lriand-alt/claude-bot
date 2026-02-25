@@ -1,8 +1,8 @@
 "use client";
 
 interface HeaderProps {
-  title: string;
-  subtitle: string;
+  title?: string;
+  subtitle?: string;
   language: "en" | "da";
   onLanguageChange: (lang: "en" | "da") => void;
 }

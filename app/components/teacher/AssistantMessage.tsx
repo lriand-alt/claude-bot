@@ -7,9 +7,6 @@ import Markdown from "react-markdown";
 import { GUID } from "@/RAG-api/types/guid.type";
 import { MessageType } from "@/RAG-api/types/message.type";
 import remarkGfm from "remark-gfm";
-import { Assistant } from "next/font/google";
-import UserMessage from "./UserMessage";
-import AssistantMessage from "./AssistantMessage";
 import { formatRagResponse } from "@/app/lib/ragApi";
 
 export interface ChatBotMessage {
@@ -23,9 +20,8 @@ export interface ChatBotMessage {
 }
 
 interface ChatMessagesProps {
-  messages: ChatBotMessage[];
-  welcomeMessage?: string;
-  loading: boolean;
+  messages: ChatBotMessage;
+  index:number;
   copyTooltip: string;
   copiedTooltip: string;
   readAloudTooltip: string;
@@ -33,99 +29,66 @@ interface ChatMessagesProps {
   onSuggestionClick?: (suggestion: string) => void;
 }
 
-export function ChatMessages({
+const AssistantMessage = ({
   messages,
-  welcomeMessage,
-  loading,
+  index,
   copyTooltip,
   copiedTooltip,
   readAloudTooltip,
   stopReadingTooltip,
   onSuggestionClick,
-}: ChatMessagesProps) {
+}: ChatMessagesProps) => {
+  const [speakingIndex, setSpeakingIndex] = useState<number | null>(null);
+  const [copiedIndex, setCopiedIndex] = useState<number | null>(null);
   const messagesEndRef = useRef<HTMLDivElement>(null);
 
-    let fullMessage = '';
-    const [fullMsg, setFullMsg] = useState("");
-
-    // make this work
-    const formatResponses = () => {
-      let combinedMessage = '';
-
-      // if ChatBot response is split into multiple messages, combine them and format as one message
-      // Filter out the suggestion messages and only combine the actual chatbot response messages
-      const chatbotMessages = messages.filter(message => message.isChatbot && message.type !== 'QuestionSuggestion');
-      chatbotMessages.forEach(element => {
-        combinedMessage += formatRagResponse(element.message).content;
-      });
-
-      const suggestionMessages = messages.filter(message => message.isChatbot && message.type === 'QuestionSuggestion');
-
-      setFullMsg(combinedMessage);
-    }
-  
-    useEffect(() => {
-      messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
-      messages.forEach(element => {
-        fullMessage += formatRagResponse(element.message);
-      });
-      console.log("Formatted RAG response:::: ", fullMessage)
-      setFullMsg(fullMessage);
-    }, [messages]);
+  let fullMessage = '';
+  const [fullMsg, setFullMsg] = useState("");
 
   useEffect(() => {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
-    console.log(messages)
+    fullMessage += formatRagResponse(messages.message).content;
+    console.log("Formatted RAG response:::: ", fullMessage)
+    setFullMsg(fullMessage);
   }, [messages]);
 
+  const handleSpeak = (text: string, index: number) => {
+    if (speakingIndex !== null) {
+      stopSpeaking();
+      if (speakingIndex === index) {
+        setSpeakingIndex(null);
+        return;
+      }
+    }
+
+    speakText(text, () => setSpeakingIndex(null));
+    setSpeakingIndex(index);
+  };
+
+  const handleCopy = async (text: string, index: number) => {
+    try {
+      await copyToClipboard(text);
+      setCopiedIndex(index);
+      setTimeout(() => setCopiedIndex(null), 2000);
+    } catch (err) {
+      console.error("Failed to copy text:", err);
+    }
+  };
+
   return (
-    <div className="flex-1 overflow-y-auto space-y-4 mb-6 min-h-0">
-      {messages.length === 0 ? (
-        <div className="flex items-center justify-center h-full text-center text-gray-400 dark:text-gray-600">
-          {welcomeMessage}
-        </div>
-      ) : (
-        messages.map((message, index) => (
-
-          message.isChatbot ? 
-          <AssistantMessage
-            messages={message}
-            index={index}
-            copyTooltip={copyTooltip}
-            copiedTooltip={copiedTooltip}
-            readAloudTooltip={readAloudTooltip}
-            stopReadingTooltip={stopReadingTooltip}
-            onSuggestionClick={onSuggestionClick}
-          /> 
-          : <UserMessage
-            index={index}
-            messages={message}
-          />
-        ))
-      )}
-
-          {/* <div
+          <div
             key={index}
-            className={`flex ${message.isChatbot ? "justify-end" : "justify-start"}`}
+            className="flex justify-start"
           >
-            <div
-              className={`max-w-3xl px-5 py-3 rounded-2xl ${
-                message.isChatbot
-                  ? "bg-gray-800 dark:bg-gray-700 text-white"
-                  : "bg-gray-100 dark:bg-gray-900 text-gray-900 dark:text-gray-100 border border-gray-200 dark:border-gray-800"
-              }`}
-            >
+            <div className="max-w-3xl px-5 py-3 rounded-2xl bg-gray-800 dark:bg-gray-700 text-white">
               <div className="flex items-start gap-3">
-
                 <Markdown remarkPlugins={[remarkGfm]}>
-                  {message.message}
+                  {messages.message}
                 </Markdown>
 
-
-                {message.isChatbot && (
                   <div className="flex gap-1">
                     <Button
-                      onClick={() => handleCopy(message.message, index)}
+                      onClick={() => handleCopy(messages.message, index)}
                       variant="ghost"
                       size="icon"
                       className="rounded-lg"
@@ -162,7 +125,7 @@ export function ChatMessages({
                       )}
                     </Button>
                     <Button
-                      onClick={() => handleSpeak(message.message, index)}
+                      onClick={() => handleSpeak(messages.message, index)}
                       variant="ghost"
                       size="icon"
                       className="rounded-lg"
@@ -201,49 +164,27 @@ export function ChatMessages({
                       )}
                     </Button>
                   </div>
-                )}
+          
               </div>
               
               {/* Question suggestions from RAG */}
-              {/* {message.isChatbot && (
                 <div className="mt-4 pt-4 border-t border-gray-200 dark:border-gray-700">
                   <p className="text-sm font-medium text-gray-600 dark:text-gray-400 mb-2">Suggested follow-up questions:</p>
                   <div className="space-y-2">
-                    {message.type === 'QuestionSuggestion' && (
+                    {messages.type === 'QuestionSuggestion' && (
                       <button
-                        onClick={() => onSuggestionClick?.(message.message)}
+                        onClick={() => onSuggestionClick?.(messages.message)}
                         className="block w-full text-left text-sm px-3 py-2 rounded-lg bg-gray-50 dark:bg-gray-800 hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors text-gray-700 dark:text-gray-300"
                       >
-                        {message.message}
+                        {messages.message}
                       </button>
                     )}
                   </div>
                 </div>
-              )}
-            </div>
-          </div>  */}
-
-
-
-
-
-        {/* ))
-      )} */}
-
-
-
-      {loading && (
-        <div className="flex justify-start">
-          <div className="bg-gray-100 dark:bg-gray-900 border border-gray-200 dark:border-gray-800 px-5 py-3 rounded-2xl">
-            <div className="flex items-center space-x-2">
-              <div className="w-2 h-2 bg-green-500 dark:bg-green-600 rounded-full animate-bounce"></div>
-              <div className="w-2 h-2 bg-green-500 dark:bg-green-600 rounded-full animate-bounce delay-100"></div>
-              <div className="w-2 h-2 bg-green-500 dark:bg-green-600 rounded-full animate-bounce delay-200"></div>
             </div>
           </div>
-        </div>
-      )}
-      <div ref={messagesEndRef} />
-    </div>
+        
   );
 }
+
+export default AssistantMessage;

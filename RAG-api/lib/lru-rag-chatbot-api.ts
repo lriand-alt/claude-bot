@@ -6,18 +6,19 @@ import {
   ChatRequestPayloadWithAssistantId,
 } from "../interfaces/chat-request-payload.interface";
 import { SendMessagePayload } from "../types/send-message-payload.type";
+import { getChatInit, sendChatMessage } from "@/app/lib/chatApi";
+import { KeyValuePairs } from "../types/key-value-pairs.type";
 
-export type AssistantOrApplicationId =
-  | {
-      assistantId: GUID;
-      applicationId?: undefined;
-    }
-  | { assistantId?: undefined; applicationId: string };
+  export type SendChatMessageParameters = {
+  message: string;
+  sourceFilter?: GUID[];
+  userValues?: KeyValuePairs;
+  chatId?: GUID;
+};
 
 export class LruRagChatbotApi {
   private readonly chatApi: string;
-  private readonly assistantId: GUID | undefined;
-  private readonly applicationId: string | undefined;
+  private readonly assistantId: string;
 
   /**
    * API class for communicating with an LRU Rag assistant.
@@ -30,13 +31,12 @@ export class LruRagChatbotApi {
    */
   constructor(
     chatApi: string,
-    { assistantId, applicationId }: AssistantOrApplicationId,
+    assistantId: string,
   ) {
     this.chatApi = chatApi;
     this.assistantId = assistantId;
-    this.applicationId = applicationId;
 
-    if (!assistantId && !applicationId) {
+    if (!assistantId) {
       throw new Error(
         "Missing required property `assistantId` or `applicationId`",
       );
@@ -44,28 +44,7 @@ export class LruRagChatbotApi {
   }
 
   public async getChatInit(): Promise<ChatInitResponse | undefined> {
-    try {
-      const response = await fetch(
-        `${this.chatApi}/${this.applicationId ?? this.assistantId}`,
-        {
-          method: "GET",
-          credentials: "include",
-          headers: await this.getRequestHeader(),
-        },
-      );
-
-      if (!response.ok) {
-        throw new Error(`Response status: ${response.status}`);
-      }
-
-      if (!response.body) {
-        throw new Error(`Response body missing`);
-      }
-
-      return await response.json();
-    } catch (err) {
-      console.log("Chat GET init failed: ", err);
-    }
+    return getChatInit(this.chatApi, this.assistantId);
   }
 
   /**
@@ -76,59 +55,97 @@ export class LruRagChatbotApi {
    * @param payload.chatId ID of the chat session, if continuing an existing session
    * @throws Error The promise rejects with an error if the API call fails
    */
-  public async sendChatMessage(
-    payload: SendMessagePayload,
-  ): Promise<
-    | { reader: ReadableStreamDefaultReader<string>; xChatId: GUID | undefined }
-    | undefined
-  > {
-    const completePayload = this.assistantId
-      ? ({
-          ...payload,
-          assistantId: this.assistantId,
-        } as ChatRequestPayloadWithAssistantId)
-      : ({
-          ...payload,
-          applicationId: this.applicationId,
-        } as ChatRequestPayloadWithApplicationId);
+  // public async sendChatMessage(
+  //   payload: SendMessagePayload,
+  // ): Promise<
+  //   | { reader: ReadableStreamDefaultReader<string>; xChatId: GUID | undefined }
+  //   | undefined
+  // > {
+  //   const completePayload = this.assistantId
+  //     ? ({
+  //         ...payload,
+  //         assistantId: this.assistantId,
+  //       } as ChatRequestPayloadWithAssistantId)
+  //     : ({
+  //         ...payload,
+  //         applicationId: this.applicationId,
+  //       } as ChatRequestPayloadWithApplicationId);
 
-    const response = await fetch(this.chatApi, {
-      method: "POST",
-      credentials: "include",
-      headers: await this.getRequestHeader(),
-      body: JSON.stringify(completePayload),
-    });
+  //   const response = await fetch(this.chatApi, {
+  //     method: "POST",
+  //     credentials: "include",
+  //     headers: await getRequestHeader(),
+  //     body: JSON.stringify(completePayload),
+  //   });
 
-    if (!response.ok) {
-      throw new Error(`Response status: ${response.status}`);
-    }
+  //   if (!response.ok) {
+  //     throw new Error(`Response status: ${response.status}`);
+  //   }
 
-    if (!response.body) {
-      return undefined;
-    }
+  //   if (!response.body) {
+  //     return undefined;
+  //   }
 
-    const reader = response.body
-      .pipeThrough(new TextDecoderStream())
-      .getReader();
+  //   const reader = response.body
+  //     .pipeThrough(new TextDecoderStream())
+  //     .getReader();
 
-    return {
-      reader,
-      xChatId:
-        response.headers.has("X-Chat-Id") &&
-        response.headers.get("X-Chat-Id") !== null
-          ? (response.headers.get("X-Chat-Id") as GUID)
-          : undefined,
-    };
-  }
+  //   return {
+  //     reader,
+  //     xChatId:
+  //       response.headers.has("X-Chat-Id") &&
+  //       response.headers.get("X-Chat-Id") !== null
+  //         ? (response.headers.get("X-Chat-Id") as GUID)
+  //         : undefined,
+  //   };
+  // }
 
-  private async getRequestHeader(accessToken?: string): Promise<HeadersInit> {
-    const requestHeaders: HeadersInit = new Headers();
-    requestHeaders.set("Content-Type", "application/json; charset=utf-8");
-    if (accessToken) {
-      requestHeaders.set("Authorization", "Bearer " + accessToken);
-    }
-    const apiKey = await generateApiKey();
-    requestHeaders.set("X-API-Key", apiKey);
-    return requestHeaders;
+  //   /**
+  //  * Sends the given chat message to the API
+  //  * @param message The message to send tho the chatbot
+  //  * @param chatId ID of the chat session, if continuing an existing session
+  //  * @param sourceFilter
+  //  * @param userValues
+  //  */
+  // public async sendChatMessage({
+  //   messageContent,
+  //   pageContent,
+  //   conversationHistory,
+  //   provider = "rag",
+  //   chatApi,
+  //   assistantId
+  // }: SendChatMessageParameters) {
+  //   return sendChatMessage(
+  //     messageContent,
+  //     pageContent,
+  //     conversationHistory,
+  //     provider,
+  //     chatApi,
+  //     assistantId,
+  //   );
+  // }
+
+
+    /**
+   * Sends the given chat message to the API
+   * @param message The message to send tho the chatbot
+   * @param chatId ID of the chat session, if continuing an existing session
+   * @param sourceFilter
+   * @param userValues
+   */
+  public async sendChatMessage({
+    message,
+    chatId,
+    sourceFilter,
+    userValues,
+  }: SendChatMessageParameters) {
+    return sendChatMessage(
+      this.chatApi,
+      message,
+      this.assistantId as GUID,
+      sourceFilter,
+      userValues,
+      chatId
+    );
   }
 }
