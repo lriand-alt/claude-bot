@@ -22,10 +22,7 @@ interface ChatMessagesProps {
   onSuggestionClick?: (suggestion: string) => void;
 }
 
-const UserMessage =({
-  messages,
-  index
-}: ChatMessagesProps) => {
+const UserMessage =({ messages }: ChatMessagesProps) => {
   const messagesEndRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
@@ -36,13 +33,8 @@ const UserMessage =({
 
 
   return (
-          <div
-            key={index}
-            className="flex justify-end"
-          >
-            <div
-              className="max-w-3xl px-5 py-3 rounded-2xl bg-gray-100 dark:bg-gray-900 text-gray-900 dark:text-gray-100 border border-gray-200 dark:border-gray-800"
-            >
+          <div className="flex justify-end">
+            <div className="max-w-3xl px-5 py-3 rounded-2xl bg-gray-100 dark:bg-gray-900 text-gray-900 dark:text-gray-100 border border-gray-200 dark:border-gray-800" >
               <div className="flex items-start gap-3">
                 <Markdown remarkPlugins={[remarkGfm]}>
                   {messages.message}

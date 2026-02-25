@@ -90,6 +90,7 @@ export function ChatMessages({
           message.isChatbot ? 
           <AssistantMessage
             messages={message}
+            key={index}
             index={index}
             copyTooltip={copyTooltip}
             copiedTooltip={copiedTooltip}
@@ -99,6 +100,7 @@ export function ChatMessages({
           /> 
           : <UserMessage
             index={index}
+            key={index}
             messages={message}
           />
         ))
