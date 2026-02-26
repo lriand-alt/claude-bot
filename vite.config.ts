@@ -8,7 +8,7 @@ export default {
       formats: ['es'],
       fileName: () => 'teacher-tool-widget.js'
     },
-    outDir: 'dist',
+    outDir: 'public',
   },
   resolve: {
     alias: {

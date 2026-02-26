@@ -3,7 +3,7 @@ import { sendToRagApi } from "@/app/lib/ragApi";
 
 export async function POST(request: Request) {
   try {
-    const { pageContent, url, conversationHistory = [], provider = "claude" } = await request.json();
+    const { pageContent, url, conversationHistory = [], provider = "rag" } = await request.json();
 
     if (!conversationHistory || conversationHistory.length === 0) {
       return NextResponse.json(
@@ -15,10 +15,9 @@ export async function POST(request: Request) {
     // Use LRU RAG API if provider is set to 'rag'
     if (provider === "rag") {
       const apiUrl = process.env.LRU_RAG_API_URL;
-      const applicationId = process.env.LRU_RAG_APPLICATION_ID;
       const assistantId = process.env.LRU_RAG_ASSISTANT_ID;
 
-      if (!apiUrl || (!applicationId && !assistantId)) {
+      if (!apiUrl || !assistantId) {
         return NextResponse.json(
           {
             response:
@@ -53,18 +52,6 @@ export async function POST(request: Request) {
           { status: 500 },
         );
       }
-    }
-
-    const apiKey = process.env.ANTHROPIC_API_KEY || process.env.OPENAI_API_KEY;
-
-    if (!apiKey) {
-      return NextResponse.json(
-        {
-          response:
-            "⚠️ API key not configured. Please set ANTHROPIC_API_KEY or OPENAI_API_KEY in your environment variables.\n\nFor this demo, here's a mock response: I would help you create educational content based on the webpage you provided. To enable real AI responses, please configure your API key.",
-        },
-        { status: 200 },
-      );
     }
 
     return NextResponse.json(
