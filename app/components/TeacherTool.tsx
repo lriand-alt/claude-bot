@@ -2,7 +2,7 @@
 
 import { useState, useRef, useEffect } from "react";
 import { useLanguage } from "../contexts/LanguageContext";
-import { sendChatMessage } from "../lib/chatApi";
+import { sendChatMessageViaProxy } from "../lib/chatApi";
 import { Header } from "./teacher/Header";
 import { Suggestions } from "./teacher/Suggestions";
 import { ChatBotMessage, ChatMessages } from "./teacher/ChatMessages";
@@ -46,31 +46,18 @@ export default function TeacherTool({ chatApi, chatAssistantId }: TeacherToolPro
     setLoading(true);
 
     try {
-      const response = await sendChatMessage(
-        chatApi,
+      const response = await sendChatMessageViaProxy(
         messageContent,
-        chatAssistantId as GUID
+        chatAssistantId as GUID,
+        pageContent,
       );
-      if(response) {
-        const { reader, xChatId, xChatToken } = response;
-
-        const getReader = reader.read().then(function processStream({ done, value }): any {
-          if (done) {
-            return;
-          }
-
-          const assistantMessage: ChatBotMessage = {
-            isChatbot: true,
-            message: value,
-            id: undefined,
-            type: "ChatCompletion",
-          };
-          setMessages((prev) => [...prev, assistantMessage]);
-
-          return reader.read().then(processStream);
-        })
-        console.log('get reader::: ',getReader)
-      }
+      const assistantMessage: ChatBotMessage = {
+        isChatbot: true,
+        message: response.response,
+        id: undefined,
+        type: "ChatCompletion",
+      };
+      setMessages((prev) => [...prev, assistantMessage]);
       
       // Update question suggestions if provided (from RAG)
       // if (suggestions && suggestions.length > 0) {

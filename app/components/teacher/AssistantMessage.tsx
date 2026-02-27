@@ -81,7 +81,7 @@ const AssistantMessage = ({
             className="flex justify-start"
           >
             <div className="max-w-3xl px-5 py-3 rounded-2xl bg-gray-800 dark:bg-gray-700 text-white">
-              <div className="flex items-start gap-3">
+              <div className="flex flex-col items-start gap-3">
                 <Markdown remarkPlugins={[remarkGfm]}>
                   {messages.message}
                 </Markdown>

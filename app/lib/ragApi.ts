@@ -1,4 +1,6 @@
-import { LruRagChatbotApi } from "@/RAG-api";
+import { ChatInitResponse } from "@/RAG-api/interfaces/chat-init.interface";
+import { GUID } from "@/RAG-api/types/guid.type";
+import { generateApiKey } from "@/RAG-api/utils/key-generator";
 
 export interface RagApiResponse {
   content: string;
@@ -50,52 +52,80 @@ export const formatRagResponse =(rawStream: string): RagApiResponse => {
 export async function sendToRagApi(
   message: string,
   chatId?: string,
+  requestAssistantId?: string,
 ): Promise<RagApiResponse> {
   const apiUrl = process.env.LRU_RAG_API_URL;
-  const applicationId = process.env.LRU_RAG_APPLICATION_ID;
-  const assistantId = process.env.LRU_RAG_ASSISTANT_ID;
+  const assistantId = requestAssistantId || process.env.LRU_RAG_ASSISTANT_ID;
 
   if (!apiUrl) {
     throw new Error("LRU_RAG_API_URL environment variable is not set");
   }
 
-  if (!applicationId && !assistantId) {
+  if (!assistantId) {
     throw new Error(
       "Either LRU_RAG_APPLICATION_ID or LRU_RAG_ASSISTANT_ID must be set",
     );
   }
 
-  const api = new LruRagChatbotApi(apiUrl, {
-    applicationId,
+  const payload: {
+    assistantId: string;
+    message: string;
+    chatId?: string;
+  } = {
     assistantId,
-  } as any);
+    message,
+  };
 
-  const payload: any = { message };
   if (chatId) {
     payload.chatId = chatId;
   }
 
-  const result = await api.sendChatMessage(payload);
+  const apiKey = await generateApiKey();
+  const response = await fetch(apiUrl, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json; charset=utf-8",
+      "X-API-Key": apiKey,
+    },
+    body: JSON.stringify(payload),
+  });
 
-  if (!result) {
-    throw new Error("Failed to get response from RAG API");
+  if (!response.ok) {
+    throw new Error(`RAG API error: ${response.status}`);
   }
 
-  const { reader, xChatId } = result;
-
-  // Read the stream and collect all chunks
-  let rawResponse = "";
-  let done = false;
-
-  while (!done) {
-    const { value, done: streamDone } = await reader.read();
-    done = streamDone;
-
-    if (value) {
-      rawResponse += value;
-    }
-  }
+  const rawResponse = await response.text();
 
   // Format the raw streaming response into readable text
   return formatRagResponse(rawResponse);
+}
+
+export async function getRagChatInit(
+  requestAssistantId?: string,
+): Promise<ChatInitResponse> {
+  const apiUrl = process.env.LRU_RAG_API_URL;
+  const assistantId = requestAssistantId || process.env.LRU_RAG_ASSISTANT_ID;
+
+  if (!apiUrl) {
+    throw new Error("LRU_RAG_API_URL environment variable is not set");
+  }
+
+  if (!assistantId) {
+    throw new Error("LRU_RAG_ASSISTANT_ID environment variable is not set");
+  }
+
+  const apiKey = await generateApiKey();
+  const response = await fetch(`${apiUrl}/${assistantId}`, {
+    method: "GET",
+    headers: {
+      "Content-Type": "application/json; charset=utf-8",
+      "X-API-Key": apiKey,
+    },
+  });
+
+  if (!response.ok) {
+    throw new Error(`RAG init API error: ${response.status}`);
+  }
+
+  return (await response.json()) as ChatInitResponse;
 }

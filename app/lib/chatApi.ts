@@ -96,6 +96,87 @@ export const sendChatMessage = async (
   return undefined;
 };
 
+export const sendChatMessageViaProxy = async (
+  message: string,
+  assistantId: GUID,
+  pageContent?: string,
+  url?: string,
+): Promise<ChatResponse> => {
+  const response = await fetch("/api/chat", {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json; charset=utf-8",
+    },
+    body: JSON.stringify({
+      pageContent,
+      url,
+      assistantId,
+      conversationHistory: [{ message }],
+    }),
+  });
+
+  const data = (await response.json()) as
+    | ChatResponse
+    | {
+        error?: string;
+      };
+
+  if (!response.ok || ("error" in data && data.error)) {
+    throw new Error(
+      "error" in data && data.error
+        ? data.error
+        : `Response status: ${response.status}`,
+    );
+  }
+
+  return data as ChatResponse;
+};
+
+export async function getChatHistory(
+  chatApi: string,
+  chatId?: GUID | undefined
+) {
+  if (chatId) {
+    try {
+      const endpointUrl = 'https://admin.dev.lrurag.dk/api/v1/chat' + "/reloadchat/" + chatId;
+      const response = await fetch(endpointUrl, {
+        method: "GET",
+        credentials: "include",
+        headers: await getRequestHeader(),
+      });
+
+      if (!response.ok) {
+        if (`${response.status}` === "401" || `${response.status}` === "403") {
+          if (window.location.hash) {
+            window.location.href =
+              window.location.origin + window.location.pathname + "#";
+          }
+        }
+        throw new Error(`Response status: ${response.status}`);
+      }
+
+      if (!response.body) {
+        return undefined;
+      }
+
+      const reader = response.body
+        .pipeThrough(new TextDecoderStream())
+        .getReader();
+      return {
+        reader,
+        xChatId:
+          response.headers.has("X-Chat-Id") &&
+          response.headers.get("X-Chat-Id") !== null
+            ? (response.headers.get("X-Chat-Id") as GUID)
+            : undefined,
+      };
+    } catch (err) {
+      return err as Error;
+    }
+  }
+  return undefined;
+}
+
 async function getRequestHeader(accessToken?: string): Promise<HeadersInit> {
   const requestHeaders: HeadersInit = new Headers();
   requestHeaders.set("Content-Type", "application/json; charset=utf-8");
@@ -120,10 +201,8 @@ export async function getChatInit(
 ): Promise<ChatInitResponse | undefined> {
   if (assistantId && chatApi) {
     try {
-      const response = await fetch(`${chatApi}/${assistantId}`, {
+      const response = await fetch(`/api/chat/init?assistantId=${assistantId}`, {
         method: "GET",
-        credentials: "include",
-        headers: await getRequestHeader(),
       });
 
       if (!response.ok) {
