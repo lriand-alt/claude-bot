@@ -1,6 +1,7 @@
 "use client";
 
 import { Button } from "../ui/Button";
+import { useLanguage } from "../../contexts/LanguageContext";
 
 interface Suggestion {
   label: string;
@@ -9,51 +10,35 @@ interface Suggestion {
 
 interface SuggestionsProps {
   loading: boolean;
-  translations: {
-    title: string;
-    labels: {
-      summarize: string;
-      createPodcast: string;
-      generateQuestions: string;
-      studyGuide: string;
-      quiz: string;
-    };
-    prompts: {
-      summarize: string;
-      createPodcast: string;
-      generateQuestions: string;
-      studyGuide: string;
-      quiz: string;
-    };
-  };
   onSuggestionClick: (prompt: string) => void;
 }
 
 export function Suggestions({
   loading,
-  translations: t,
   onSuggestionClick,
 }: SuggestionsProps) {
+  const { t } = useLanguage();
+
   const suggestions: Suggestion[] = [
     {
-      label: t.labels.summarize,
-      prompt: t.prompts.summarize,
+      label: t.quickActions.summarize,
+      prompt: t.suggestions.summarize,
     },
     {
-      label: t.labels.createPodcast,
-      prompt: t.prompts.createPodcast,
+      label: t.quickActions.createPodcast,
+      prompt: t.suggestions.createPodcast,
     },
     {
-      label: t.labels.generateQuestions,
-      prompt: t.prompts.generateQuestions,
+      label: t.quickActions.generateQuestions,
+      prompt: t.suggestions.generateQuestions,
     },
     {
-      label: t.labels.studyGuide,
-      prompt: t.prompts.studyGuide,
+      label: t.quickActions.studyGuide,
+      prompt: t.suggestions.studyGuide,
     },
     {
-      label: t.labels.quiz,
-      prompt: t.prompts.quiz,
+      label: t.quickActions.quiz,
+      prompt: t.suggestions.quiz,
     },
   ];
 

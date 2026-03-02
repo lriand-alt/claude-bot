@@ -2,14 +2,12 @@
 
 import { Button } from "../ui/Button";
 import { Input } from "../ui/Input";
+import { useLanguage } from "../../contexts/LanguageContext";
 
 interface InputAreaProps {
   input: string;
   loading: boolean;
   pageContent: string;
-  placeholderWithContent: string;
-  placeholderEmpty: string;
-  sendButtonText: string;
   onInputChange: (value: string) => void;
   onSendMessage: () => void;
 }
@@ -18,12 +16,11 @@ export function InputArea({
   input,
   loading,
   pageContent,
-  placeholderWithContent,
-  placeholderEmpty,
-  sendButtonText,
   onInputChange,
   onSendMessage,
 }: InputAreaProps) {
+  const { t } = useLanguage();
+
   return (
     <div className="sticky bottom-0 bg-white dark:bg-gray-950 border-t border-gray-200 dark:border-gray-800 pt-4 pb-2">
       <div className="flex gap-3">
@@ -32,7 +29,9 @@ export function InputArea({
           value={input}
           onChange={(e) => onInputChange(e.target.value)}
           onKeyDown={(e) => e.key === "Enter" && onSendMessage()}
-          placeholder={pageContent ? placeholderWithContent : placeholderEmpty}
+          placeholder={
+            pageContent ? t.chat.inputPlaceholder : t.chat.inputPlaceholderEmpty
+          }
           disabled={loading}
           inputSize="md"
           className="flex-1"
@@ -43,7 +42,7 @@ export function InputArea({
           variant="secondary"
           size="lg"
         >
-          {sendButtonText}
+          {t.chat.sendButton}
         </Button>
       </div>
     </div>

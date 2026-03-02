@@ -104,9 +104,9 @@ export const sendChatMessageViaProxy = async (
 ): Promise<ChatResponse> => {
   const response = await fetch("/api/chat", {
     method: "POST",
-    headers: {
-      "Content-Type": "application/json; charset=utf-8",
-    },
+    credentials: "include",
+    headers: await getRequestHeader(),
+    // body: JSON.stringify(payload),
     body: JSON.stringify({
       pageContent,
       url,
@@ -138,7 +138,7 @@ export async function getChatHistory(
 ) {
   if (chatId) {
     try {
-      const endpointUrl = 'https://admin.dev.lrurag.dk/api/v1/chat' + "/reloadchat/" + chatId;
+      const endpointUrl = chatApi + "/reloadchat/" + chatId;
       const response = await fetch(endpointUrl, {
         method: "GET",
         credentials: "include",
@@ -203,6 +203,8 @@ export async function getChatInit(
     try {
       const response = await fetch(`/api/chat/init?assistantId=${assistantId}`, {
         method: "GET",
+        credentials: "include",
+        headers: await getRequestHeader(),
       });
 
       if (!response.ok) {

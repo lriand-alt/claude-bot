@@ -10,19 +10,23 @@ import { InputArea } from "./teacher/InputArea";
 import { GUID } from "@/RAG-api/types/guid.type";
 import { ChatInitResponse } from "@/RAG-api/interfaces/chat-init.interface";
 import { chatInit } from "../lib/chat-init";
+import classNames from "classnames";
 
 export interface TeacherToolProps {
   /** URL of LRU RAG assistant admin - i.e. https://admin.lrurag.dk/api/v1/chat */
   chatApi: string;
   /** The GUID of the assistant or the custom application id */
   chatAssistantId: string;
+  /** Determines whether or not the teacher tool is visible */
+  open?: boolean;
+  /** Determines size on the screen */
+  size?: "small" | "medium" | "large";
 }
 
-export default function TeacherTool({ chatApi, chatAssistantId }: TeacherToolProps) {
+export default function TeacherTool({ chatApi, chatAssistantId, open = true, size = "large" }: TeacherToolProps) {
     const [chatbotInit, setChatbotInit] = useState<ChatInitResponse | undefined>(
     undefined
   );
-  const { language, setLanguage, t } = useLanguage();
   const [pageContent, setPageContent] = useState("");
   const [messages, setMessages] = useState<ChatBotMessage[]>([]);
   const [input, setInput] = useState("");
@@ -84,35 +88,15 @@ export default function TeacherTool({ chatApi, chatAssistantId }: TeacherToolPro
   };
 
   return (
-    <div className="min-h-screen bg-white dark:bg-gray-950 flex flex-col">
+    <div className={classNames({'block': open, 'hidden': !open, 'w-1/2': size === 'medium', 'w-screen': size === 'large'}, "min-h-screen bg-white dark:bg-gray-950 flex flex-col z-1000")}>
       <Header
         title={chatbotInit?.name}
-        subtitle={t.header.subtitle}
-        language={language}
-        onLanguageChange={setLanguage}
       />
 
       <div className="flex-1 flex flex-col max-w-7xl w-full mx-auto px-8 py-6">
         <div className="flex justify-between items-center mb-4">
             <Suggestions
               loading={loading}
-              translations={{
-                title: t.quickActions.title,
-                labels: {
-                  summarize: t.quickActions.summarize,
-                  createPodcast: t.quickActions.createPodcast,
-                  generateQuestions: t.quickActions.generateQuestions,
-                  studyGuide: t.quickActions.studyGuide,
-                  quiz: t.quickActions.quiz,
-                },
-                prompts: {
-                  summarize: t.suggestions.summarize,
-                  createPodcast: t.suggestions.createPodcast,
-                  generateQuestions: t.suggestions.generateQuestions,
-                  studyGuide: t.suggestions.studyGuide,
-                  quiz: t.suggestions.quiz,
-                },
-              }}
               onSuggestionClick={handleSuggestionClick}
             />
           <div className="flex-1" />
@@ -121,11 +105,7 @@ export default function TeacherTool({ chatApi, chatAssistantId }: TeacherToolPro
         <ChatMessages
           messages={messages}
           loading={loading}
-          welcomeMessage={chatbotInit?.welcomeMessage}
-          copyTooltip={t.chat.copyTooltip}
-          copiedTooltip={t.chat.copiedTooltip}
-          readAloudTooltip={t.chat.readAloudTooltip}
-          stopReadingTooltip={t.chat.stopReadingTooltip}
+          chatbotInitData={chatbotInit}
           onSuggestionClick={sendMessage}
         />
 
@@ -133,9 +113,6 @@ export default function TeacherTool({ chatApi, chatAssistantId }: TeacherToolPro
           input={input}
           loading={loading}
           pageContent={pageContent}
-          placeholderWithContent={t.chat.inputPlaceholder}
-          placeholderEmpty={t.chat.inputPlaceholderEmpty}
-          sendButtonText={t.chat.sendButton}
           onInputChange={setInput}
           onSendMessage={() => sendMessage(input)}
         />
