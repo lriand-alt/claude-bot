@@ -52,10 +52,9 @@ export const formatRagResponse =(rawStream: string): RagApiResponse => {
 export async function sendToRagApi(
   message: string,
   chatId?: string,
-  requestAssistantId?: string,
+  apiUrl?: string,
+  assistantId?: string,
 ): Promise<RagApiResponse> {
-  const apiUrl = process.env.LRU_RAG_API_URL;
-  const assistantId = requestAssistantId || process.env.LRU_RAG_ASSISTANT_ID;
 
   if (!apiUrl) {
     throw new Error("LRU_RAG_API_URL environment variable is not set");
@@ -101,10 +100,9 @@ export async function sendToRagApi(
 }
 
 export async function getRagChatInit(
-  requestAssistantId?: string,
+  assistantId?: string,
+  apiUrl?: string,
 ): Promise<ChatInitResponse> {
-  const apiUrl = process.env.LRU_RAG_API_URL;
-  const assistantId = requestAssistantId || process.env.LRU_RAG_ASSISTANT_ID;
 
   if (!apiUrl) {
     throw new Error("LRU_RAG_API_URL environment variable is not set");

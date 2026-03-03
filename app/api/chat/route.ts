@@ -37,6 +37,7 @@ export async function POST(request: Request) {
       const ragResponse = await sendToRagApi(
         messageWithContext,
         undefined,
+        'https://admin.dev.lrurag.dk/api/v1/chat',
         assistantId,
       );
       return NextResponse.json({

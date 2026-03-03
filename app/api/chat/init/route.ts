@@ -6,7 +6,7 @@ export async function GET(request: Request) {
     const { searchParams } = new URL(request.url);
     const assistantId = searchParams.get("assistantId") || undefined;
 
-    const data = await getRagChatInit(assistantId);
+    const data = await getRagChatInit(assistantId, 'https://admin.dev.lrurag.dk/api/v1/chat');
     return NextResponse.json(data);
   } catch (error) {
     const errorMsg =
