@@ -1,7 +1,6 @@
 "use client";
 
 import { useState, useRef, useEffect } from "react";
-import { useLanguage } from "../contexts/LanguageContext";
 import { sendChatMessageViaProxy } from "../lib/chatApi";
 import { Header } from "./teacher/Header";
 import { Suggestions } from "./teacher/Suggestions";
@@ -38,6 +37,9 @@ export default function TeacherTool({ chatApi, chatAssistantId, open = true, siz
       // initialization logic if needed, e.g. fetching assistant configuration
       chatInit(chatApi, chatAssistantId, setChatbotInit);
     }
+
+    // If there is already a chatId, get the history of the chat
+    
   }, []);
 
   const sendMessage = async (messageContent: string) => {

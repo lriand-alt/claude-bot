@@ -1,6 +1,10 @@
 import { resolve } from "path";
 
 export default {
+  define: {
+    'process.env.NODE_ENV': '"production"',
+    'process.env': '{}'
+  },
   build: {
     lib: {
       entry: resolve(__dirname, "./app/components/TeacherToolWidget.tsx"),
