@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useRef, useEffect } from "react";
-import { sendChatMessageViaProxy } from "../lib/chatApi";
+import { sendChatMessage } from "../lib/chatApi";
 import { Header } from "./teacher/Header";
 import { Suggestions } from "./teacher/Suggestions";
 import { ChatBotMessage, ChatMessages } from "./teacher/ChatMessages";
@@ -52,15 +52,14 @@ export default function TeacherTool({ chatApi, chatAssistantId, open = true, siz
     setLoading(true);
 
     try {
-      const response = await sendChatMessageViaProxy(
+      const response = await sendChatMessage(
+        chatApi,
         messageContent,
-        chatAssistantId as GUID,
-        pageContent,
-        chatApi
+        chatAssistantId as GUID
       );
       const assistantMessage: ChatBotMessage = {
         isChatbot: true,
-        message: response.response,
+        message: response ? JSON.stringify(response.reader) : "",
         id: undefined,
         type: "ChatCompletion",
       };

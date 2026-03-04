@@ -14,6 +14,11 @@ export default {
     },
     outDir: 'public',
   },
+  experimental: {
+    renderBuiltUrl(filename: string) {
+      return "http://localhost:4173/" + filename;
+    },
+  },
   resolve: {
     alias: {
       '@': resolve(__dirname, './')

@@ -96,42 +96,6 @@ export const sendChatMessage = async (
   return undefined;
 };
 
-export const sendChatMessageViaProxy = async (
-  message: string,
-  assistantId: GUID,
-  pageContent?: string,
-  url?: string,
-): Promise<ChatResponse> => {
-  const response = await fetch("/api/chat", {
-    method: "POST",
-    credentials: "include",
-    headers: await getRequestHeader(),
-    // body: JSON.stringify(payload),
-    body: JSON.stringify({
-      pageContent,
-      url,
-      assistantId,
-      conversationHistory: [{ message }],
-    }),
-  });
-
-  const data = (await response.json()) as
-    | ChatResponse
-    | {
-        error?: string;
-      };
-
-  if (!response.ok || ("error" in data && data.error)) {
-    throw new Error(
-      "error" in data && data.error
-        ? data.error
-        : `Response status: ${response.status}`,
-    );
-  }
-
-  return data as ChatResponse;
-};
-
 export async function getChatHistory(
   chatApi: string,
   chatId?: GUID | undefined
@@ -201,7 +165,7 @@ export async function getChatInit(
 ): Promise<ChatInitResponse | undefined> {
   if (assistantId && chatApi) {
     try {
-      const response = await fetch(`/api/chat/init?assistantId=${assistantId}`, {
+      const response = await fetch(`${chatApi}/${assistantId}`, {
         method: "GET",
         credentials: "include",
         headers: await getRequestHeader(),

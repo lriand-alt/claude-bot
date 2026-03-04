@@ -12,9 +12,7 @@ A Next.js tool for teachers to transform web content into educational materials 
   - Create comprehension questions
   - Build study guides
   - Generate quizzes
-- 🤖 Multiple AI Providers:
-  - Claude (Anthropic)
-  - GPT (OpenAI)
+- 🤖 AI Provider:
   - LRU RAG Chatbot
 
 ## Setup
@@ -48,16 +46,6 @@ A Next.js tool for teachers to transform web content into educational materials 
    npm run dev
    ```
 
-4. Open [http://localhost:3000](http://localhost:3000) in your browser
-
-## Usage
-
-1. **Select AI Provider**: Use the provider toggle at the top right to choose between Claude, OpenAI, or RAG
-2. **Enter a URL**: Paste the URL of any webpage you want to work with
-3. **Load Content**: Click "Load Content" to fetch and process the webpage
-4. **Choose an action**: Click one of the quick action buttons or type your own request
-5. **Get results**: The AI will process the content according to your request
-
 ## Examples
 
 Try these actions with a loaded webpage:
@@ -75,6 +63,4 @@ Try these actions with a loaded webpage:
 - TypeScript
 - Tailwind CSS
 - AI Providers:
-  - Anthropic Claude
-  - OpenAI GPT
   - LRU RAG Chatbot (custom implementation)
