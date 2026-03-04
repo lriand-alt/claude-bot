@@ -10,7 +10,7 @@ import remarkGfm from "remark-gfm";
 import { Assistant } from "next/font/google";
 import UserMessage from "./UserMessage";
 import AssistantMessage from "./AssistantMessage";
-import { formatRagResponse } from "@/app/lib/ragApi";
+import { formatRagResponse } from "@/app/lib/formatResponse";
 import { ChatInitResponse } from "@/RAG-api/interfaces/chat-init.interface";
 import WelcomeMessage from "./WelcomeMessage";
 

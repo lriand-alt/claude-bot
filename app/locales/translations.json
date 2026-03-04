@@ -2,7 +2,7 @@
   "da": {
     "header": {
       "title": "🎓 Lærerens Indholdsassistent",
-      "subtitle": "Omdan webindhold til undervisningsmaterialer"
+      "subtitle": "Assistent til at differentiere undervisningsmaterialer"
     },
     "contentSource": {
       "chooseLabel": "Hvordan vil du indlæse indhold?",
@@ -63,7 +63,7 @@
   "en": {
     "header": {
       "title": "🎓 Teacher's Content Assistant",
-      "subtitle": "Transform web content into educational materials"
+      "subtitle": "Assistant for differentiating educational materials"
     },
     "contentSource": {
       "chooseLabel": "How would you like to load content?",

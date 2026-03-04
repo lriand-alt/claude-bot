@@ -16,7 +16,7 @@ const geistMono = Geist_Mono({
 
 export const metadata: Metadata = {
   title: "Teacher's Content Assistant",
-  description: "Transform web content into educational materials with AI",
+  description: "Assistant for differentiating educational materials",
 };
 
 export default function RootLayout({

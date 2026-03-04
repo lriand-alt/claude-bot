@@ -7,7 +7,7 @@ import Markdown from "react-markdown";
 import { GUID } from "@/RAG-api/types/guid.type";
 import { MessageType } from "@/RAG-api/types/message.type";
 import remarkGfm from "remark-gfm";
-import { formatRagResponse } from "@/app/lib/ragApi";
+import { formatRagResponse } from "@/app/lib/formatResponse";
 import { useLanguage } from "../../contexts/LanguageContext";
 import { CheckIcon } from "../icons/CheckIcon";
 import { CopyIcon } from "../icons/CopyIcon";

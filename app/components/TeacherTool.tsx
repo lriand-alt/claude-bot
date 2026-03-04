@@ -65,21 +65,19 @@ export default function TeacherTool({ chatApi, chatAssistantId, open = true, siz
       };
       setMessages((prev) => [...prev, assistantMessage]);
       
-      // Update question suggestions if provided (from RAG)
-      // if (suggestions && suggestions.length > 0) {
-      //   setQuestionSuggestions(suggestions);
-      // }
     }catch (error) {
       console.error("Error sending message:", error);
       const errorMessage =
         error instanceof Error ? error.message : "Unknown error occurred";
-      // setMessages((prev) => [
-      //   ...prev,
-      //   {
-      //     isChatbot: true,
-      //     message: t.errors.apiError.replace("{error}", errorMessage),
-      //   },
-      // ]);
+      setMessages((prev) => [
+        ...prev,
+        {
+          isChatbot: true,
+          message: errorMessage,
+          id: undefined,
+          type: "ChatCompletion",
+        },
+      ]);
     } finally {
       setLoading(false);
     }
@@ -98,12 +96,12 @@ export default function TeacherTool({ chatApi, chatAssistantId, open = true, siz
       <div className="flex-1 flex flex-col max-w-7xl w-full mx-auto px-8 py-6">
         <div className="flex justify-between items-center mb-4">
             <Suggestions
+              suggestions={chatbotInit?.suggestedQuestions || []}
               loading={loading}
               onSuggestionClick={handleSuggestionClick}
             />
           <div className="flex-1" />
         </div>
-        
         <ChatMessages
           messages={messages}
           loading={loading}
