@@ -56,6 +56,7 @@ export default function TeacherTool({ chatApi, chatAssistantId, open = true, siz
         messageContent,
         chatAssistantId as GUID,
         pageContent,
+        chatApi
       );
       const assistantMessage: ChatBotMessage = {
         isChatbot: true,
