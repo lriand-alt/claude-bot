@@ -103,7 +103,7 @@ const AssistantMessage = ({
         </div>
       </div>
 
-      <p className="text-sm font-medium text-gray-600 dark:text-gray-400 mt-3 ml-3">Suggested follow-up questions:</p>
+      {/* <p className="text-sm font-medium text-gray-600 dark:text-gray-400 mt-3 ml-3">Suggested follow-up questions:</p> */}
       </div>
     )}
         

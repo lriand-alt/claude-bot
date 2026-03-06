@@ -9,7 +9,7 @@ import { GUID } from "@/RAG-api/types/guid.type";
 import { ChatInitResponse } from "@/RAG-api/interfaces/chat-init.interface";
 import { chatInit } from "../lib/chat-init";
 import classNames from "classnames";
-import { readerType, sendChatBotMessage } from "../lib/formatResponse2";
+import { readerType, sendChatBotMessage, setReaderToUndefined } from "../lib/formatResponse2";
 
 export interface TeacherToolProps {
   /** URL of LRU RAG assistant admin - i.e. https://admin.lrurag.dk/api/v1/chat */
@@ -36,12 +36,20 @@ export default function TeacherTool({ chatApi, chatAssistantId, open = true, siz
 
   useEffect(() => {
     if(chatApi && chatAssistantId) {
+      //Setting reader from ChatBotHelper to undefined to be sure it is undefined when going through different pages in admin project
+      setReaderToUndefined();
       // initialization logic if needed, e.g. fetching assistant configuration
       chatInit(chatApi, chatAssistantId, setChatbotInit);
+      
+      // If there is already a chatId, get the history of the chat
+      const urlStr = window.location.href;
+      const chatIdPos = urlStr.indexOf("#chatId=");
+      
+      // If a chat is already running get the history api
+      if (chatIdPos > 0) {
+        sendMessage(true);
+      }
     }
-
-    // If there is already a chatId, get the history of the chat
-    
   }, []);
 
   const sendMessage = async (
@@ -66,7 +74,7 @@ export default function TeacherTool({ chatApi, chatAssistantId, open = true, siz
   };
 
   return (
-    <div className={classNames({'block': open, 'hidden': !open, 'w-1/2': size === 'medium', 'w-screen': size === 'large'}, "min-h-screen bg-white dark:bg-gray-950 flex flex-col z-1000")}>
+    <div className={classNames({'fixed z-1000': open, 'hidden': !open, 'right-0 bottom-0': size === 'small', 'inset-y-0 right-0 w-1/2': size === 'medium', 'inset-0': size === 'large'}, "bg-white dark:bg-gray-950 flex flex-col overflow-scroll")}>
       <Header
         title={chatbotInit?.name}
       />
@@ -78,7 +86,6 @@ export default function TeacherTool({ chatApi, chatAssistantId, open = true, siz
               loading={loading}
               onSuggestionClick={handleSuggestionClick}
             />
-          <div className="flex-1" />
         </div>
         <ChatMessages
           messages={messageHistory}
