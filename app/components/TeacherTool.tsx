@@ -74,7 +74,7 @@ export default function TeacherTool({ chatApi, chatAssistantId, open = true, siz
   };
 
   return (
-    <div className={classNames({'fixed z-1000': open, 'hidden': !open, 'right-0 bottom-0': size === 'small', 'inset-y-0 right-0 w-1/2': size === 'medium', 'inset-0': size === 'large'}, "bg-white dark:bg-gray-950 flex flex-col overflow-scroll")}>
+    <div className={classNames({'fixed z-1000': open, 'hidden': !open, 'right-0 bottom-0': size === 'small', 'inset-y-0 right-0 w-1/2': size === 'medium', 'inset-0': size === 'large'}, "bg-white dark:bg-gray-950 flex flex-col overflow-y-scroll shadow-md shadow-gray-300 border-l border-gray-200")}>
       <Header
         title={chatbotInit?.name}
       />
