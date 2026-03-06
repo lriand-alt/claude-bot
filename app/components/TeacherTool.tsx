@@ -22,7 +22,7 @@ export interface TeacherToolProps {
   size?: "small" | "medium" | "large";
 }
 
-export default function TeacherTool({ chatApi, chatAssistantId, open, size }: TeacherToolProps) {
+export default function TeacherTool({ chatApi, chatAssistantId, open = true, size = 'medium' }: TeacherToolProps) {
     const [chatbotInit, setChatbotInit] = useState<ChatInitResponse | undefined>(
     undefined
   );

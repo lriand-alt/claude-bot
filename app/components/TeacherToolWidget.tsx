@@ -14,14 +14,22 @@ if (!globalWithProcess.process) {
   globalWithProcess.process.env = { NODE_ENV: "production" };
 }
 
-interface TeacherToolWidgetProps {
+export interface TeacherToolWidgetProps {
+  /** URL of LRU RAG assistant admin - i.e. https://admin.lrurag.dk/api/v1/chat */
   chatApi: string;
+  /** The GUID of the assistant or the custom application id */
   chatAssistantId: string;
+  /** Determines whether or not the teacher tool is visible */
+  open?: boolean;
+  /** Determines size on the screen */
+  size?: "small" | "medium" | "large";
 }
 
 function TeacherToolWidgetRoot({
   chatApi,
   chatAssistantId,
+  size,
+  open,
 }: TeacherToolWidgetProps) {
   const rootRef = useRef<HTMLDivElement>(null);
 
@@ -44,7 +52,7 @@ function TeacherToolWidgetRoot({
   return (
     <div ref={rootRef}>
       <LanguageProvider>
-        <TeacherTool chatApi={chatApi} chatAssistantId={chatAssistantId} />
+        <TeacherTool chatApi={chatApi} chatAssistantId={chatAssistantId} size={size} open={open} />
       </LanguageProvider>
     </div>
   );
@@ -54,6 +62,8 @@ const TeacherToolWidget = r2wc(TeacherToolWidgetRoot, {
     props: {
       chatApi: "string",
       chatAssistantId: "string",
+      size: "string",
+      open: "boolean",
     },
     shadow: 'open',
 });
