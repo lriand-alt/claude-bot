@@ -9,7 +9,7 @@ import { GUID } from "@/RAG-api/types/guid.type";
 import { ChatInitResponse } from "@/RAG-api/interfaces/chat-init.interface";
 import { chatInit } from "../lib/chat-init";
 import classNames from "classnames";
-import { readerType, sendChatBotMessage, setReaderToUndefined } from "../lib/formatResponse2";
+import { readerType, sendChatBotMessage } from "../lib/formatResponse2";
 
 export interface TeacherToolProps {
   /** URL of LRU RAG assistant admin - i.e. https://admin.lrurag.dk/api/v1/chat */
@@ -22,7 +22,7 @@ export interface TeacherToolProps {
   size?: "small" | "medium" | "large";
 }
 
-export default function TeacherTool({ chatApi, chatAssistantId, open = true, size = "large" }: TeacherToolProps) {
+export default function TeacherTool({ chatApi, chatAssistantId, open, size }: TeacherToolProps) {
     const [chatbotInit, setChatbotInit] = useState<ChatInitResponse | undefined>(
     undefined
   );
@@ -37,18 +37,18 @@ export default function TeacherTool({ chatApi, chatAssistantId, open = true, siz
   useEffect(() => {
     if(chatApi && chatAssistantId) {
       //Setting reader from ChatBotHelper to undefined to be sure it is undefined when going through different pages in admin project
-      setReaderToUndefined();
+      // setReaderToUndefined();
       // initialization logic if needed, e.g. fetching assistant configuration
       chatInit(chatApi, chatAssistantId, setChatbotInit);
       
       // If there is already a chatId, get the history of the chat
-      const urlStr = window.location.href;
-      const chatIdPos = urlStr.indexOf("#chatId=");
+      // const urlStr = window.location.href;
+      // const chatIdPos = urlStr.indexOf("#chatId=");
       
       // If a chat is already running get the history api
-      if (chatIdPos > 0) {
-        sendMessage(true);
-      }
+      // if (chatIdPos > 0) {
+      //   sendMessage(true);
+      // }
     }
   }, []);
 
