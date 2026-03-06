@@ -74,8 +74,7 @@ export const sendChatMessage = async (
       const reader = response.body
         .pipeThrough(new TextDecoderStream())
         .getReader();
-
-        console.log("Reader::: ", reader)
+        
       return {
         reader,
         xChatId:

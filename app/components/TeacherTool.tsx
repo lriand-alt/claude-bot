@@ -1,7 +1,6 @@
 "use client";
 
 import { useState, useRef, useEffect } from "react";
-import { sendChatMessage } from "../lib/chatApi";
 import { Header } from "./teacher/Header";
 import { Suggestions } from "./teacher/Suggestions";
 import { ChatBotMessage, ChatMessages } from "./teacher/ChatMessages";
@@ -10,6 +9,7 @@ import { GUID } from "@/RAG-api/types/guid.type";
 import { ChatInitResponse } from "@/RAG-api/interfaces/chat-init.interface";
 import { chatInit } from "../lib/chat-init";
 import classNames from "classnames";
+import { readerType, sendChatBotMessage } from "../lib/formatResponse2";
 
 export interface TeacherToolProps {
   /** URL of LRU RAG assistant admin - i.e. https://admin.lrurag.dk/api/v1/chat */
@@ -27,10 +27,12 @@ export default function TeacherTool({ chatApi, chatAssistantId, open = true, siz
     undefined
   );
   const [pageContent, setPageContent] = useState("");
-  const [messages, setMessages] = useState<ChatBotMessage[]>([]);
+  // const [messages, setMessages] = useState<ChatBotMessage[]>([]);
   const [input, setInput] = useState("");
   const [loading, setLoading] = useState(false);
-  const fileInputRef = useRef<HTMLInputElement>(null);
+  const inputRef = useRef<HTMLInputElement>(null);
+  const [readerRef, setReaderRef] = useState<readerType | undefined>(undefined);
+  const [messageHistory, setMessageHistory] = useState<ChatBotMessage[]>([]);
 
   useEffect(() => {
     if(chatApi && chatAssistantId) {
@@ -42,49 +44,25 @@ export default function TeacherTool({ chatApi, chatAssistantId, open = true, siz
     
   }, []);
 
-  const sendMessage = async (messageContent: string) => {
-    if (!messageContent.trim()) return;
-
-    const userMessage: ChatBotMessage = { isChatbot: false, message: messageContent, id: undefined, type: "UserInput" };
-    const updatedMessages = [...messages, userMessage];
-    setMessages(updatedMessages);
-    setInput("");
-    setLoading(true);
-
-    try {
-      const response = await sendChatMessage(
-        chatApi,
-        messageContent,
-        chatAssistantId as GUID
-      );
-      const assistantMessage: ChatBotMessage = {
-        isChatbot: true,
-        message: response ? JSON.stringify(response.reader) : "",
-        id: undefined,
-        type: "ChatCompletion",
-      };
-      setMessages((prev) => [...prev, assistantMessage]);
-      
-    }catch (error) {
-      console.error("Error sending message:", error);
-      const errorMessage =
-        error instanceof Error ? error.message : "Unknown error occurred";
-      setMessages((prev) => [
-        ...prev,
-        {
-          isChatbot: true,
-          message: errorMessage,
-          id: undefined,
-          type: "ChatCompletion",
-        },
-      ]);
-    } finally {
-      setLoading(false);
-    }
+  const sendMessage = async (
+    getMessagesHistory: boolean,
+    inputText?: string
+  ) => {
+    await sendChatBotMessage(
+      getMessagesHistory,
+      inputRef,
+      setMessageHistory,
+      setReaderRef,
+      // resetChat,
+      chatApi,
+      chatAssistantId as GUID,
+      inputText
+    );
+    setReaderRef(undefined);
   };
 
   const handleSuggestionClick = (prompt: string) => {
-    sendMessage(prompt);
+    sendMessage(false, prompt);
   };
 
   return (
@@ -103,18 +81,18 @@ export default function TeacherTool({ chatApi, chatAssistantId, open = true, siz
           <div className="flex-1" />
         </div>
         <ChatMessages
-          messages={messages}
-          loading={loading}
+          messages={messageHistory}
           chatbotInitData={chatbotInit}
-          onSuggestionClick={sendMessage}
+          onSuggestionClick={handleSuggestionClick}
         />
 
         <InputArea
+          ref={inputRef}
           input={input}
           loading={loading}
           pageContent={pageContent}
           onInputChange={setInput}
-          onSendMessage={() => sendMessage(input)}
+          onSendMessage={() => sendMessage(true, input)}
         />
       </div>
     </div>
