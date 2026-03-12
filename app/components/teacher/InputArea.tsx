@@ -29,7 +29,7 @@ export function InputArea({
           type="text"
           value={input}
           onChange={(e) => onInputChange(e.target.value)}
-          onKeyDown={(e) => e.key === "Enter" && onSendMessage}
+          onKeyDown={(e) => e.key === "Enter" && onSendMessage()}
           placeholder={
             pageContent ? t.chat.inputPlaceholder : t.chat.inputPlaceholderEmpty
           }
