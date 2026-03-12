@@ -1,7 +1,6 @@
 "use client";
 
 import { Button } from "../ui/Button";
-import { useLanguage } from "../../contexts/LanguageContext";
 
 interface Suggestion {
   label: string;

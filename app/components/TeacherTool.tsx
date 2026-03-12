@@ -19,7 +19,7 @@ export interface TeacherToolProps {
   /** Determines whether or not the teacher tool is visible */
   open?: boolean;
   /** Determines size on the screen */
-  size?: "small" | "medium" | "large";
+  size?: "medium" | "large";
 }
 
 export default function TeacherTool({ chatApi, chatAssistantId, open, size }: TeacherToolProps) {
@@ -33,6 +33,8 @@ export default function TeacherTool({ chatApi, chatAssistantId, open, size }: Te
   const inputRef = useRef<HTMLInputElement>(null);
   const [readerRef, setReaderRef] = useState<readerType | undefined>(undefined);
   const [messageHistory, setMessageHistory] = useState<ChatBotMessage[]>([]);
+  const [chatSize, setChatSize] = useState<"medium" | "large" | undefined>(size);
+  const [isOpen, setIsOpen] = useState<boolean>(open || false);
 
   useEffect(() => {
     if(chatApi && chatAssistantId) {
@@ -51,6 +53,13 @@ export default function TeacherTool({ chatApi, chatAssistantId, open, size }: Te
       // }
     }
   }, []);
+
+  // Ensure if the open prop changes from the parent component, the TeacherTool will reflect that change
+  useEffect(() => {
+    if (open !== undefined) {
+      setIsOpen(open);
+    }
+  }, [open]);
 
   const sendMessage = async (
     getMessagesHistory: boolean,
@@ -73,10 +82,24 @@ export default function TeacherTool({ chatApi, chatAssistantId, open, size }: Te
     sendMessage(false, prompt);
   };
 
+  const handleChatSizeChange = () => {
+    if(chatSize === "medium") {
+      setChatSize('large');
+    } else {
+    setChatSize('medium');
+    }
+  };
+
+  const handleOpenAndClose = () => {
+    setIsOpen(!isOpen);
+  };
+
   return (
-    <div className={classNames({'fixed z-1000': open, 'hidden': !open, 'right-0 bottom-0': size === 'small', 'inset-y-0 right-0 w-1/2': size === 'medium', 'inset-0': size === 'large'}, "bg-white dark:bg-gray-950 flex flex-col overflow-y-scroll shadow-md shadow-gray-300 border-l border-gray-200")}>
+    <div className={classNames({'fixed z-1000': isOpen, 'hidden': !isOpen, 'w-1/2': chatSize === 'medium', 'w-full': chatSize === 'large'}, "bg-white right-0 inset-y-0 transition-all duration-500 dark:bg-gray-950 flex flex-col overflow-y-scroll shadow-md shadow-gray-300 border-l border-gray-200")}>
       <Header
         title={chatbotInit?.name}
+        handleChatSizeChange={handleChatSizeChange}
+        handleOpenAndClose={handleOpenAndClose}
       />
 
       <div className="flex-1 flex flex-col max-w-7xl w-full mx-auto px-8 py-6">
@@ -99,7 +122,7 @@ export default function TeacherTool({ chatApi, chatAssistantId, open, size }: Te
           loading={loading}
           pageContent={pageContent}
           onInputChange={setInput}
-          onSendMessage={() => sendMessage(true, input)}
+          onSendMessage={() => {sendMessage(false, input); setInput("")}}
         />
       </div>
     </div>

@@ -1,7 +1,6 @@
 import r2wc from "@r2wc/react-to-web-component";
 import { useEffect, useRef } from "react";
 import TeacherTool from "./TeacherTool";
-import { LanguageProvider } from "../contexts/LanguageContext";
 import widgetStyles from "../globals.css?inline";
 
 const globalWithProcess = globalThis as any;
@@ -22,7 +21,7 @@ export interface TeacherToolWidgetProps {
   /** Determines whether or not the teacher tool is visible */
   open?: boolean;
   /** Determines size on the screen */
-  size?: "small" | "medium" | "large";
+  size?: "medium" | "large";
 }
 
 function TeacherToolWidgetRoot({
@@ -51,9 +50,7 @@ function TeacherToolWidgetRoot({
 
   return (
     <div ref={rootRef}>
-      <LanguageProvider>
-        <TeacherTool chatApi={chatApi} chatAssistantId={chatAssistantId} size={size} open={open} />
-      </LanguageProvider>
+      <TeacherTool chatApi={chatApi} chatAssistantId={chatAssistantId} size={size} open={open} />
     </div>
   );
 }

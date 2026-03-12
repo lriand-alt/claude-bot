@@ -43,7 +43,7 @@ export function ChatMessages({
 
         {messages.map((message, index) => {
           if(message.isStreamingStill === true) {
-            return <Loading/>
+            return <Loading key={index}/>
           } else {
 
           if(message.isChatbot && (message.type === 'ChatCompletion' || message.type === 'QuestionSuggestion')) { 

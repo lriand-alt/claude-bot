@@ -5,7 +5,7 @@ import { Button } from "../ui/Button";
 import { speakText, stopSpeaking, copyToClipboard } from "../../lib/speechUtils";
 import Markdown from "react-markdown";
 import remarkGfm from "remark-gfm";
-import { useLanguage } from "../../contexts/LanguageContext";
+import translations from "../../locales/translations.json";
 import { CheckIcon } from "../icons/CheckIcon";
 import { CopyIcon } from "../icons/CopyIcon";
 import { PauseCircleIcon } from "../icons/PauseCircleIcon";
@@ -23,7 +23,7 @@ const AssistantMessage = ({
   index,
   onSuggestionClick,
 }: ChatMessagesProps) => {
-  const { t } = useLanguage();
+  const t = translations.da;
   const [speakingIndex, setSpeakingIndex] = useState<number | null>(null);
   const [copiedIndex, setCopiedIndex] = useState<number | null>(null);
 

@@ -1,13 +1,18 @@
 "use client";
 
-import { useLanguage } from "../../contexts/LanguageContext";
+import Image from "next/image";
+import expandIcon from "../icons/Expand.png";
+import closeIcon from "../icons/Close.png";
+import translations from "../../locales/translations.json";
 
 interface HeaderProps {
   title?: string;
+  handleChatSizeChange?: () => void;
+  handleOpenAndClose?: () => void;
 }
 
-export function Header({ title }: HeaderProps) {
-  const { language, setLanguage, t } = useLanguage();
+export function Header({ title, handleChatSizeChange, handleOpenAndClose }: HeaderProps) {
+  const t = translations.da;
 
   return (
     <div className="bg-white dark:bg-gray-950 border-b border-gray-200 dark:border-gray-800 px-8 py-4">
@@ -18,28 +23,14 @@ export function Header({ title }: HeaderProps) {
             {t.header.subtitle}
           </p>
         </div>
-        <button
-          onClick={() => setLanguage(language === "en" ? "da" : "en")}
-          className="relative inline-flex h-10 w-20 items-center rounded-full bg-gray-300 dark:bg-gray-700 transition-colors focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-offset-2"
-          aria-label="Toggle language"
-        >
-          <span
-            className={`absolute text-xl opacity-60 ${
-              language === "en" ? "right-2.5" : "left-2.5"
-            }`}
-          >
-            {language === "en" ? "🇩🇰" : "🇬🇧"}
-          </span>
-          <span
-            className={`inline-flex h-8 w-8 transform items-center justify-center rounded-full bg-white shadow-lg transition-transform ${
-              language === "en" ? "translate-x-1" : "translate-x-11"
-            }`}
-          >
-            <span className="text-xl">
-              {language === "en" ? "🇬🇧" : "🇩🇰"}
-            </span>
-          </span>
-        </button>
+        <div className="flex gap-2">
+          <button onClick={handleChatSizeChange} className="flex cursor-pointer justify-center items-center w-10 h-10 bg-gray-800 rounded-full">
+            <Image className="invert" src={expandIcon} alt="Expand" width={24} height={24}/>
+          </button>
+          <button onClick={handleOpenAndClose} className="flex cursor-pointer justify-center items-center w-10 h-10 bg-gray-800 rounded-full">
+            <Image className="invert" src={closeIcon} alt="Expand" width={24} height={24}/>
+          </button>
+        </div>
       </div>
     </div>
   );

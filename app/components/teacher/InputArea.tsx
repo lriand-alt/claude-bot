@@ -1,7 +1,7 @@
 "use client";
 
 import { Button } from "../ui/Button";
-import { useLanguage } from "../../contexts/LanguageContext";
+import translations from "../../locales/translations.json";
 
 interface InputAreaProps {
   ref: React.Ref<HTMLInputElement>;
@@ -20,7 +20,7 @@ export function InputArea({
   onInputChange,
   onSendMessage,
 }: InputAreaProps) {
-  const { t } = useLanguage();
+  const t = translations.da;
 
   return (
     <div className="sticky bottom-0 bg-white dark:bg-gray-950 border-t border-gray-200 dark:border-gray-800 pt-4 pb-2">
