@@ -33,8 +33,11 @@ export function ChatMessages({
   const messagesEndRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
+    if(messages.length === 0) {
+      return;
+    }
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
-    console.log(messages)
+    console.log('Messages ::: ', messages)
   }, [messages]);
 
   return (

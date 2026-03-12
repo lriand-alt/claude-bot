@@ -1,11 +1,6 @@
 "use client";
 
-import { Button } from "../ui/Button";
-
-interface Suggestion {
-  label: string;
-  prompt: string;
-}
+import { SuggestionButton } from "../ui/SuggestionButton";
 
 interface SuggestionsProps {
   suggestions: string[];
@@ -22,16 +17,13 @@ export function Suggestions({
   return (
       <div className="flex flex-wrap gap-2">
         {suggestions.map((suggestion, index) => (
-          <Button
+          <SuggestionButton
             key={index}
             onClick={() => onSuggestionClick(suggestion)}
             disabled={loading}
-            variant="outline"
-            size="sm"
-            className="rounded-full"
           >
             {suggestion}
-          </Button>
+          </SuggestionButton>
         ))}
       </div>
   );

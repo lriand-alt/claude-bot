@@ -9,7 +9,7 @@ import { GUID } from "@/RAG-api/types/guid.type";
 import { ChatInitResponse } from "@/RAG-api/interfaces/chat-init.interface";
 import { chatInit } from "../lib/chat-init";
 import classNames from "classnames";
-import { readerType, sendChatBotMessage } from "../lib/formatResponse2";
+import { readerType, sendChatBotMessage, setReaderToUndefined } from "../lib/formatResponse2";
 
 export interface TeacherToolProps {
   /** URL of LRU RAG assistant admin - i.e. https://admin.lrurag.dk/api/v1/chat */
@@ -39,7 +39,7 @@ export default function TeacherTool({ chatApi, chatAssistantId, open, size }: Te
   useEffect(() => {
     if(chatApi && chatAssistantId) {
       //Setting reader from ChatBotHelper to undefined to be sure it is undefined when going through different pages in admin project
-      // setReaderToUndefined();
+      setReaderToUndefined();
       // initialization logic if needed, e.g. fetching assistant configuration
       chatInit(chatApi, chatAssistantId, setChatbotInit);
       
@@ -124,7 +124,7 @@ export default function TeacherTool({ chatApi, chatAssistantId, open, size }: Te
           loading={loading}
           pageContent={pageContent}
           onInputChange={setInput}
-          onSendMessage={() => {sendMessage(false, input); setInput("")}}
+          onSendMessage={() => {sendMessage(false); setInput("")}}
         />
       </div>
     </div>

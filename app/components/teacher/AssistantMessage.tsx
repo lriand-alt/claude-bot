@@ -1,7 +1,6 @@
 "use client";
 
 import { useState } from "react";
-import { Button } from "../ui/Button";
 import { speakText, stopSpeaking, copyToClipboard } from "../../lib/speechUtils";
 import Markdown from "react-markdown";
 import remarkGfm from "remark-gfm";
@@ -10,6 +9,7 @@ import { CheckIcon } from "../icons/CheckIcon";
 import { CopyIcon } from "../icons/CopyIcon";
 import { PauseCircleIcon } from "../icons/PauseCircleIcon";
 import { VolumeIcon } from "../icons/VolumeIcon";
+import { MessageActionButton } from "../ui/MessageActionButton";
 import { ChatBotMessage } from "./ChatMessages";
 
 interface ChatMessagesProps {
@@ -64,40 +64,26 @@ const AssistantMessage = ({
           </Markdown>
 
             <div className="flex gap-1">
-              <Button
+              <MessageActionButton
                 onClick={() => handleCopy(item.message, index)}
-                variant="ghost"
-                size="icon"
-                className="rounded-lg"
-                title={
-                  copiedIndex === index
-                    ? t.chat.copiedTooltip
-                    : t.chat.copyTooltip
-                }
+                title={copiedIndex === index ? t.chat.copiedTooltip : t.chat.copyTooltip}
               >
                 {copiedIndex === index ? (
-                  <CheckIcon className="w-5 h-5 text-green-600" />
+                  <CheckIcon className="w-5 h-5 text-green-400" />
                 ) : (
-                  <CopyIcon className="w-5 h-5 text-gray-500 dark:text-gray-400" />
+                  <CopyIcon className="w-5 h-5 text-gray-400" />
                 )}
-              </Button>
-              <Button
+              </MessageActionButton>
+              <MessageActionButton
                 onClick={() => handleSpeak(item.message, index)}
-                variant="ghost"
-                size="icon"
-                className="rounded-lg"
-                title={
-                  speakingIndex === index
-                    ? t.chat.stopReadingTooltip
-                    : t.chat.readAloudTooltip
-                }
+                title={speakingIndex === index ? t.chat.stopReadingTooltip : t.chat.readAloudTooltip}
               >
                 {speakingIndex === index ? (
-                  <PauseCircleIcon className="w-5 h-5 text-green-600" />
+                  <PauseCircleIcon className="w-5 h-5 text-green-400" />
                 ) : (
-                  <VolumeIcon className="w-5 h-5 text-gray-500 dark:text-gray-400" />
+                  <VolumeIcon className="w-5 h-5 text-gray-400" />
                 )}
-              </Button>
+              </MessageActionButton>
             </div>
     
         </div>

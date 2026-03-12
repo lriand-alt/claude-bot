@@ -1,6 +1,5 @@
 "use client";
 
-import { Button } from "../ui/Button";
 import translations from "../../locales/translations.json";
 
 interface InputAreaProps {
@@ -30,21 +29,20 @@ export function InputArea({
           type="text"
           value={input}
           onChange={(e) => onInputChange(e.target.value)}
-          onKeyDown={(e) => e.key === "Enter" && onSendMessage()}
+          onKeyDown={(e) => e.key === "Enter" && onSendMessage}
           placeholder={
             pageContent ? t.chat.inputPlaceholder : t.chat.inputPlaceholderEmpty
           }
           disabled={loading}
           ref={ref}
         />
-        <Button
+        <button
           onClick={onSendMessage}
           disabled={loading || !input.trim()}
-          variant="secondary"
-          size="lg"
+          className="px-8 py-3 bg-gray-800 dark:bg-gray-700 text-white hover:bg-gray-900 dark:hover:bg-gray-600 shadow-sm hover:shadow-md disabled:bg-gray-300 dark:disabled:bg-gray-800 focus-visible:ring-gray-500 text-base inline-flex items-center justify-center rounded-xl font-medium transition-all focus:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 cursor-pointer disabled:cursor-not-allowed"
         >
           {t.chat.sendButton}
-        </Button>
+        </button>
       </div>
     </div>
   );
