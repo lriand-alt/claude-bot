@@ -6,7 +6,6 @@ interface InputAreaProps {
   ref: React.Ref<HTMLInputElement>;
   input: string;
   loading: boolean;
-  pageContent: string;
   onInputChange: (value: string) => void;
   onSendMessage: () => void;
 }
@@ -15,7 +14,6 @@ export function InputArea({
   ref,
   input,
   loading,
-  pageContent,
   onInputChange,
   onSendMessage,
 }: InputAreaProps) {
@@ -30,9 +28,7 @@ export function InputArea({
           value={input}
           onChange={(e) => onInputChange(e.target.value)}
           onKeyDown={(e) => e.key === "Enter" && onSendMessage()}
-          placeholder={
-            pageContent ? t.chat.inputPlaceholder : t.chat.inputPlaceholderEmpty
-          }
+          placeholder={ t.chat.inputPlaceholderEmpty }
           disabled={loading}
           ref={ref}
         />

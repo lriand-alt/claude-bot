@@ -2,25 +2,10 @@
   "da": {
     "header": {
       "title": "🎓 Lærerens Indholdsassistent",
-      "subtitle": "Assistent til at differentiere undervisningsmaterialer"
-    },
-    "contentSource": {
-      "chooseLabel": "Hvordan vil du indlæse indhold?",
-      "loadFromUrl": "🌐 Indlæs fra URL",
-      "uploadPdf": "📄 Upload PDF",
-      "urlLabel": "Indlæs fra URL",
-      "uploadPdfLabel": "Upload PDF",
-      "urlPlaceholder": "https://eksempel.dk/artikel",
-      "loadUrlButton": "Indlæs URL",
-      "loading": "Indlæser...",
-      "uploadPdfButton": "📄 Upload PDF",
-      "contentLoadedFrom": "✓ Indhold indlæst fra:",
-      "pdfLoaded": "✓ PDF indlæst:",
-      "startFresh": "🔄 Start forfra",
-      "waitingForFile": "Venter på filvalg..."
+      "subtitle": "Jeg er AI’en Betty og kan hjælpe dig med at omdanne indhold fra forløbet eller lave nyt indhold til forløbet. Vælg en af genvejsknapperne eller skriv, hvad du gerne vil have 😊"
     },
     "quickActions": {
-      "title": "Hurtige handlinger:",
+      "title": "Klik og få:",
       "summarize": "📝 Opsummer",
       "createPodcast": "🎙️ Lav Podcast",
       "generateQuestions": "❓ Generer spørgsmål",
@@ -35,21 +20,14 @@
       "quiz": "Lav en quiz med 5 multiple choice-spørgsmål baseret på dette indhold med svarforklaringer."
     },
     "chat": {
-      "emptyStateTitle": "👆 Indtast en URL eller upload en PDF for at komme i gang",
-      "emptyStateSubtitle": "Indlæs indhold, og jeg hjælper dig med at lave undervisningsmaterialer fra det",
-      "inputPlaceholder": "Bed mig om at gøre noget med dette indhold...",
       "inputPlaceholderEmpty": "Spørg mig om noget eller indlæs indhold for at analysere...",
       "sendButton": "Send",
-      "pdfLoadedMessage": "Jeg har indlæst PDF-indholdet ({pages} sider). Du kan nu bede mig om at opsummere det, lave et podcast-manuskript, generere spørgsmål eller noget andet, du gerne vil have mig til at gøre med dette indhold.",
-      "urlLoadedMessage": "Jeg har indlæst indholdet fra {url}. Du kan nu bede mig om at opsummere det, lave et podcast-manuskript, generere spørgsmål eller noget andet, du gerne vil have mig til at gøre med dette indhold.",
       "copyTooltip": "Kopier til udklipsholder",
       "copiedTooltip": "Kopieret!",
       "readAloudTooltip": "Læs højt",
       "stopReadingTooltip": "Stop læsning"
     },
     "providers": {
-      "claude": "Claude",
-      "openai": "OpenAI",
       "rag": "RAG"
     },
     "errors": {
@@ -58,67 +36,6 @@
       "pdfNotValid": "Upload venligst en PDF-fil",
       "fetchContentLength": "Hentet indhold længde:",
       "apiError": "❌ Fejl: {error}\n\nTjek venligst:\n1. Din API-nøgle er konfigureret i .env.local\n2. API-nøglen er gyldig\n3. Du har tilstrækkelige kreditter\n\nTjek browserkonsollen for flere detaljer."
-    }
-  },
-  "en": {
-    "header": {
-      "title": "🎓 Teacher's Content Assistant",
-      "subtitle": "Assistant for differentiating educational materials"
-    },
-    "contentSource": {
-      "chooseLabel": "How would you like to load content?",
-      "loadFromUrl": "🌐 Load from URL",
-      "uploadPdf": "📄 Upload PDF",
-      "urlLabel": "Load from URL",
-      "uploadPdfLabel": "Upload PDF",
-      "urlPlaceholder": "https://example.com/article",
-      "loadUrlButton": "Load URL",
-      "loading": "Loading...",
-      "uploadPdfButton": "📄 Upload PDF",
-      "contentLoadedFrom": "✓ Content loaded from:",
-      "pdfLoaded": "✓ PDF loaded:",
-      "startFresh": "🔄 Start Fresh",
-      "waitingForFile": "Waiting for file selection..."
-    },
-    "quickActions": {
-      "title": "Quick Actions:",
-      "summarize": "📝 Summarize",
-      "createPodcast": "🎙️ Create Podcast",
-      "generateQuestions": "❓ Generate Questions",
-      "studyGuide": "📚 Study Guide",
-      "quiz": "🧪 Quiz"
-    },
-    "suggestions": {
-      "summarize": "Create a concise summary of the main points from this content.",
-      "createPodcast": "Create a podcast script based on this content, including an introduction, key discussion points, and conclusion.",
-      "generateQuestions": "Create 10 comprehension questions about this content suitable for students.",
-      "studyGuide": "Create a detailed study guide with key terms, main concepts, and important takeaways.",
-      "quiz": "Create a 5-question multiple choice quiz based on this content with answer explanations."
-    },
-    "chat": {
-      "emptyStateTitle": "👆 Enter a URL or upload a PDF to get started",
-      "emptyStateSubtitle": "Load content and I'll help you create educational materials from it",
-      "inputPlaceholder": "Ask me to do something with this content...",
-      "inputPlaceholderEmpty": "Ask me anything or load content to analyze...",
-      "sendButton": "Send",
-      "pdfLoadedMessage": "I've loaded the PDF content ({pages} pages). You can now ask me to summarize it, create a podcast script, generate questions, or anything else you'd like me to do with this content.",
-      "urlLoadedMessage": "I've loaded the content from {url}. You can now ask me to summarize it, create a podcast script, generate questions, or anything else you'd like me to do with this content.",
-      "copyTooltip": "Copy to clipboard",
-      "copiedTooltip": "Copied!",
-      "readAloudTooltip": "Read aloud",
-      "stopReadingTooltip": "Stop reading"
-    },
-    "providers": {
-      "claude": "Claude",
-      "openai": "OpenAI",
-      "rag": "RAG"
-    },
-    "errors": {
-      "pdfUploadFailed": "Failed to upload PDF file",
-      "urlFetchFailed": "Failed to fetch the webpage content. Please make sure the URL is valid.",
-      "pdfNotValid": "Please upload a PDF file",
-      "fetchContentLength": "Fetched content length:",
-      "apiError": "❌ Error: {error}\n\nPlease check:\n1. Your API key is configured in .env.local\n2. The API key is valid\n3. You have sufficient credits\n\nCheck the browser console for more details."
     }
   }
 }

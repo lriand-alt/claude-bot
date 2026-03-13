@@ -1,6 +1,7 @@
 "use client";
 
 import { SuggestionButton } from "../ui/SuggestionButton";
+import translations from "../../locales/translations.json";
 
 interface SuggestionsProps {
   suggestions: string[];
@@ -14,7 +15,13 @@ export function Suggestions({
   onSuggestionClick,
 }: SuggestionsProps) {
 
+  const t = translations.da;
+
   return (
+    <div className="flex flex-col gap-3">          
+      <p className="text-sm font-semibold text-gray-600 dark:text-gray-400 mt-1">
+        {t.quickActions.title}
+      </p>
       <div className="flex flex-wrap gap-2">
         {suggestions.map((suggestion, index) => (
           <SuggestionButton
@@ -25,6 +32,7 @@ export function Suggestions({
             {suggestion}
           </SuggestionButton>
         ))}
+      </div>
       </div>
   );
 }

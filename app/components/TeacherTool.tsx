@@ -26,8 +26,6 @@ export default function TeacherTool({ chatApi, chatAssistantId, open, size }: Te
     const [chatbotInit, setChatbotInit] = useState<ChatInitResponse | undefined>(
     undefined
   );
-  const [pageContent, setPageContent] = useState("");
-  // const [messages, setMessages] = useState<ChatBotMessage[]>([]);
   const [input, setInput] = useState("");
   const [loading, setLoading] = useState(false);
   const inputRef = useRef<HTMLInputElement>(null);
@@ -97,32 +95,37 @@ export default function TeacherTool({ chatApi, chatAssistantId, open, size }: Te
   };
 
   return (
-    <div className={classNames({'fixed z-1000': isOpen, 'hidden': !isOpen, 'w-1/2': chatSize === 'medium', 'w-full': chatSize === 'large'}, "bg-white right-0 inset-y-0 transition-all duration-500 dark:bg-gray-950 flex flex-col overflow-y-scroll shadow-md shadow-gray-300 border-l border-gray-200")}>
+    <div className={
+      classNames({
+        'fixed z-1000': isOpen, 
+        'hidden': !isOpen, 
+        'w-1/2': chatSize === 'medium', 
+        'w-full': chatSize === 'large'}, 
+        "bg-white right-0 inset-y-0 transition-all duration-500 dark:bg-gray-950 flex flex-col overflow-y-scroll shadow-md shadow-gray-300 border-l border-gray-200"
+      )}
+    >
       <Header
         title={chatbotInit?.name}
         handleChatSizeChange={handleChatSizeChange}
         handleOpenAndClose={handleOpenAndClose}
       />
-
       <div className="flex-1 flex flex-col max-w-7xl w-full mx-auto px-8 py-6">
         <div className="flex justify-between items-center mb-4">
-            <Suggestions
-              suggestions={chatbotInit?.suggestedQuestions || []}
-              loading={loading}
-              onSuggestionClick={handleSuggestionClick}
-            />
+          <Suggestions
+            suggestions={chatbotInit?.suggestedQuestions || []}
+            loading={loading}
+            onSuggestionClick={handleSuggestionClick}
+          />
         </div>
         <ChatMessages
           messages={messageHistory}
           chatbotInitData={chatbotInit}
           onSuggestionClick={handleSuggestionClick}
         />
-
         <InputArea
           ref={inputRef}
           input={input}
           loading={loading}
-          pageContent={pageContent}
           onInputChange={setInput}
           onSendMessage={() => {sendMessage(false); setInput("")}}
         />

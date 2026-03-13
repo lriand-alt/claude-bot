@@ -2,8 +2,6 @@
 
 import { useState } from "react";
 import { speakText, stopSpeaking, copyToClipboard } from "../../lib/speechUtils";
-import Markdown from "react-markdown";
-import remarkGfm from "remark-gfm";
 import translations from "../../locales/translations.json";
 import { CheckIcon } from "../icons/CheckIcon";
 import { CopyIcon } from "../icons/CopyIcon";
@@ -11,6 +9,7 @@ import { PauseCircleIcon } from "../icons/PauseCircleIcon";
 import { VolumeIcon } from "../icons/VolumeIcon";
 import { MessageActionButton } from "../ui/MessageActionButton";
 import { ChatBotMessage } from "./ChatMessages";
+import FormattedMarkdown from "../ui/FormattedMarkdown";
 
 interface ChatMessagesProps {
   item: ChatBotMessage;
@@ -59,32 +58,31 @@ const AssistantMessage = ({
       <div>
       <div className="max-w-3xl px-5 py-3 rounded-2xl bg-gray-800 dark:bg-gray-700 text-white">
         <div className="flex flex-col items-start gap-3">
-          <Markdown remarkPlugins={[remarkGfm]}>
+          <FormattedMarkdown>
             {item.message}
-          </Markdown>
-
-            <div className="flex gap-1">
-              <MessageActionButton
-                onClick={() => handleCopy(item.message, index)}
-                title={copiedIndex === index ? t.chat.copiedTooltip : t.chat.copyTooltip}
-              >
-                {copiedIndex === index ? (
-                  <CheckIcon className="w-5 h-5 text-green-400" />
-                ) : (
-                  <CopyIcon className="w-5 h-5 text-gray-400" />
-                )}
-              </MessageActionButton>
-              <MessageActionButton
-                onClick={() => handleSpeak(item.message, index)}
-                title={speakingIndex === index ? t.chat.stopReadingTooltip : t.chat.readAloudTooltip}
-              >
-                {speakingIndex === index ? (
-                  <PauseCircleIcon className="w-5 h-5 text-green-400" />
-                ) : (
-                  <VolumeIcon className="w-5 h-5 text-gray-400" />
-                )}
-              </MessageActionButton>
-            </div>
+          </FormattedMarkdown>
+          <div className="flex gap-1">
+            <MessageActionButton
+              onClick={() => handleCopy(item.message, index)}
+              title={copiedIndex === index ? t.chat.copiedTooltip : t.chat.copyTooltip}
+            >
+              {copiedIndex === index ? (
+                <CheckIcon className="w-5 h-5 text-green-400" />
+              ) : (
+                <CopyIcon className="w-5 h-5 text-gray-400" />
+              )}
+            </MessageActionButton>
+            <MessageActionButton
+              onClick={() => handleSpeak(item.message, index)}
+              title={speakingIndex === index ? t.chat.stopReadingTooltip : t.chat.readAloudTooltip}
+            >
+              {speakingIndex === index ? (
+                <PauseCircleIcon className="w-5 h-5 text-green-400" />
+              ) : (
+                <VolumeIcon className="w-5 h-5 text-gray-400" />
+              )}
+            </MessageActionButton>
+          </div>
     
         </div>
       </div>
