@@ -16,7 +16,7 @@ export function Header({ title, handleChatSizeChange, handleOpenAndClose }: Head
 
   return (
     <div className="bg-white dark:bg-gray-950 border-b border-gray-200 dark:border-gray-800 px-8 py-4">
-      <div className="max-w-7xl mx-auto flex items-center justify-between">
+      <div className="max-w-7xl gap-3 mx-auto flex items-center justify-between">
         <div>
           <h1 className="text-2xl font-bold rainbow-text">{title}</h1>
           <p className="text-sm text-gray-600 dark:text-gray-400 mt-1">
