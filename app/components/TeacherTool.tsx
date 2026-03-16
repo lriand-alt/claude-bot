@@ -54,7 +54,7 @@ export default function TeacherTool({ chatApi, chatAssistantId, open, size }: Te
 
   // Ensure if the open prop changes from the parent component, the TeacherTool will reflect that change
   useEffect(() => {
-    open !== undefined && setIsOpen(open);
+    open !== undefined && setIsOpen(open ?? false);
   }, [open]);
 
   const sendMessage = async (

@@ -48,30 +48,6 @@ function TeacherToolWidgetRoot({
     rootNode.prepend(style);
   }, []);
 
-  useEffect(() => {
-    const inner = rootRef.current?.firstElementChild as HTMLElement | null;
-    if (!inner) return;
-
-    let previouslyHidden = inner.classList.contains("hidden");
-
-    const observer = new MutationObserver(() => {
-      const isHidden = inner.classList.contains("hidden");
-      if (isHidden !== previouslyHidden) {
-        previouslyHidden = isHidden;
-        const rootNode = rootRef.current?.getRootNode();
-        const host = rootNode instanceof ShadowRoot ? rootNode.host : rootRef.current;
-        if (host) {
-          // Reflect internal state back to the host element's property
-          // so the external project can read widget.open without tracking its own state
-          (host as any).open = !isHidden;
-        }
-      }
-    });
-
-    observer.observe(inner, { attributes: true, attributeFilter: ["class"] });
-    return () => observer.disconnect();
-  }, []);
-
   return (
     <div ref={rootRef}>
       <TeacherTool chatApi={chatApi} chatAssistantId={chatAssistantId} size={size} open={open} />
