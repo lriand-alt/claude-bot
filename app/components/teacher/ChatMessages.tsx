@@ -37,7 +37,6 @@ export function ChatMessages({
       return;
     }
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
-    console.log('Messages ::: ', messages)
   }, [messages]);
 
   return (

@@ -9,7 +9,7 @@ import { GUID } from "@/RAG-api/types/guid.type";
 import { ChatInitResponse } from "@/RAG-api/interfaces/chat-init.interface";
 import { chatInit } from "../lib/chat-init";
 import classNames from "classnames";
-import { readerType, sendChatBotMessage, setReaderToUndefined } from "../lib/formatResponse2";
+import { readerType, sendChatBotMessage, setReaderToUndefined } from "../lib/formatResponse";
 
 export interface TeacherToolProps {
   /** URL of LRU RAG assistant admin - i.e. https://admin.lrurag.dk/api/v1/chat */

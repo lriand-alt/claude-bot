@@ -18,7 +18,6 @@ export const chatInit = async (
 
   try {
     const data = await getChatInit(chatApi, chatAssistantId);
-    console.log('chatInit data:', data);
     setChatbotInit(data);
   } catch (error) {
     console.error('chatInit failed:', error);
